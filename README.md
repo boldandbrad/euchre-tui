@@ -1,0 +1,23 @@
+# euchre-tui
+
+Euchre is a team-based trick-taking card game for 4 players that is popular in
+the US Midwest, and some other places.
+
+**euchre-tui** allows you to play euchre in your terminal with a beautifully
+designed text-based interface.
+
+> [!WARNING]<br>
+> **euchre-tui** is currently in **ALPHA**. This means it is highly unstable and
+> is missing key features. Please track the progress of features throughout this
+> README with the following symbols:
+> | Symbol    | Status                    |
+> | -         | -                         |
+> | ✅        | Implemented - stable      |
+> | ✳️        | Implemented - unstable    |
+> | 🚧        | Work in Progress          |
+> | ❌        | Not Started               |
+
+## ⚖️ Legal <a id="legal"></a>
+
+Copyright (c) 2024 Bradley Wojcik. Released under the MIT License. See
+[LICENSE](LICENSE) for details.

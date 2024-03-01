@@ -1,0 +1,17 @@
+[package]
+name = "euchre-tui"
+version = "0.1.0-alpha.1"
+edition = "2021"
+authors = ["boldandbrad"]
+description = "Play euchre in your terminal via a beautifully designed text-based interface!"
+repository = "https://github.com/boldandbrad/euchre-tui"
+license = "MIT"
+
+[dependencies]
+crossterm = "0.27.0"
+rand = "0.8.5"
+ratatui = "0.26.1"
+
+[[bin]]
+name = "euchre"
+path = "src/main.rs"
