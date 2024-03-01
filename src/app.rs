@@ -1,5 +1,7 @@
-use crate::interface::Interface;
-use crate::structs::{Card, CurrentScreen, GameState, Hand, Rank, Suit};
+use crate::game::player::{Bot, Human, Player};
+use crate::game::team::Team;
+use crate::interface::interface::Interface;
+use crate::structs::{Card, CurrentScreen, GameState, Hand, Rank, Seat, Suit};
 use crate::tui::Tui;
 use crossterm::event::{Event, KeyCode, KeyEventKind};
 use rand::seq::SliceRandom;
@@ -38,10 +40,25 @@ fn initialize_game(num_cpus: usize) -> GameState {
         });
     }
 
+    let user = Human::new("Brad".to_string(), Seat::Bottom, player_hand);
+    let user_partner = Bot::new("Morgan".to_string(), Seat::Top, cpu_hands.remove(0));
+    let user_team = Team::new(
+        "Team A".to_string(),
+        vec![Player::Human(user), Player::Bot(user_partner)],
+    );
+
+    let opponent_1 = Bot::new("Kyle".to_string(), Seat::Left, cpu_hands.remove(0));
+    let opponent_2 = Bot::new("Ryan".to_string(), Seat::Right, cpu_hands.remove(0));
+    let opposing_team = Team::new(
+        "Team B".to_string(),
+        vec![Player::Bot(opponent_1), Player::Bot(opponent_2)],
+    );
+
     GameState {
         current_screen: CurrentScreen::GameTable,
-        player_hand,
-        cpu_hands,
+        user_team,
+        opposing_team,
+        deck,
     }
 }
 

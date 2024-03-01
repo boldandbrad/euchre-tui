@@ -1,18 +1,44 @@
+use crate::interface::traits::Screen;
 use crate::structs::GameState;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     widgets::{block::Block, Borders},
     Frame,
 };
+use std::io::Result;
 
-pub struct Interface {}
+pub struct GameScreen {
+    game_state: GameState,
+}
 
-impl Interface {
-    pub fn new() -> Self {
-        Self {}
+impl GameScreen {
+    pub fn new(game_state: &GameState) -> Self {
+        GameScreen {
+            game_state: game_state.clone(),
+        }
     }
 
-    pub fn render(&mut self, frame: &mut Frame, _game_state: &GameState) {
+    pub fn build_top_player_panel() -> Result<()> {
+        Ok(())
+    }
+
+    pub fn build_left_player_panel() -> Result<()> {
+        Ok(())
+    }
+
+    pub fn build_right_player_panel() -> Result<()> {
+        Ok(())
+    }
+
+    pub fn build_bottom_player_panel() -> Result<()> {
+        Ok(())
+    }
+}
+
+impl Screen for GameScreen {
+    fn render(&mut self, frame: &mut Frame) {
+        let user = self.game_state.user_team.players.get(0);
+
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -87,28 +113,3 @@ impl Interface {
         );
     }
 }
-
-// Draw a card at the specified position
-// fn draw_card(card: Card, x: usize, y: usize) -> Result<()> {
-//     let suit_symbol = match card.suit {
-//         Suit::Hearts => '♥',
-//         Suit::Diamonds => '♦',
-//         Suit::Clubs => '♣',
-//         Suit::Spades => '♠',
-//     };
-//     let rank_symbol = match card.rank {
-//         Rank::Nine => '9',
-//         Rank::Ten => 'T',
-//         Rank::Jack => 'J',
-//         Rank::Queen => 'Q',
-//         Rank::King => 'K',
-//         Rank::Ace => 'A',
-//     };
-//     execute!(
-//         stdout(),
-//         crossterm::cursor::MoveTo(x as u16, y as u16),
-//         style::Print(rank_symbol),
-//         style::Print(suit_symbol)
-//     )?;
-//     Ok(())
-// }

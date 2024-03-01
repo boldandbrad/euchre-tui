@@ -1,3 +1,5 @@
+use crate::game::team::Team;
+
 // Define card suits
 #[derive(Debug, Copy, Clone)]
 pub enum Suit {
@@ -32,19 +34,31 @@ impl Card {
 }
 
 // Define a player's hand
+#[derive(Debug, Clone)]
 pub struct Hand {
     pub cards: Vec<Card>,
 }
 
 // Define the game state
+#[derive(Clone)]
 pub struct GameState {
     pub current_screen: CurrentScreen,
-    pub player_hand: Hand,
-    pub cpu_hands: Vec<Hand>,
+    pub user_team: Team,
+    pub opposing_team: Team,
+    pub deck: Vec<Card>,
 }
 
+#[derive(Clone)]
 pub enum CurrentScreen {
     Title,
     GameTable,
     Settings,
+}
+
+#[derive(Clone)]
+pub enum Seat {
+    Bottom,
+    Left,
+    Top,
+    Right,
 }
