@@ -12,7 +12,7 @@ impl Interface {
         Self {}
     }
 
-    pub fn render(&mut self, frame: &mut Frame, game_state: &GameState) {
+    pub fn render(&mut self, frame: &mut Frame, _game_state: &GameState) {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([

@@ -8,6 +8,7 @@ repository = "https://github.com/boldandbrad/euchre-tui"
 license = "MIT"
 
 [dependencies]
+clap = { version = "4.5.1", features = ["derive"] }
 crossterm = "0.27.0"
 rand = "0.8.5"
 ratatui = "0.26.1"
