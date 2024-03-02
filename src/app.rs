@@ -1,7 +1,8 @@
-use crate::game::player::{Bot, Human, Player};
-use crate::game::team::Team;
+use crate::engine::game::GameState;
 use crate::interface::interface::Interface;
-use crate::structs::{Card, CurrentScreen, GameState, Hand, Rank, Seat, Suit};
+use crate::structs::{Card, Hand, Rank, Seat, Suit};
+use crate::table::player::{Bot, Human, Player};
+use crate::table::team::Team;
 use crate::tui::Tui;
 use crossterm::event::{Event, KeyCode, KeyEventKind};
 use rand::seq::SliceRandom;
@@ -55,7 +56,6 @@ fn initialize_game(num_cpus: usize) -> GameState {
     );
 
     GameState {
-        current_screen: CurrentScreen::GameTable,
         user_team,
         opposing_team,
         deck,
@@ -107,6 +107,6 @@ impl App {
     }
 
     pub fn render(&mut self, frame: &mut ratatui::Frame) {
-        self.interface.render(frame, &self.game_state);
+        let _ = self.interface.render(frame, &self.game_state);
     }
 }

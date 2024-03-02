@@ -17,7 +17,7 @@ pub trait Playable {
 pub struct Human {
     pub name: String,
     pub seat: Seat,
-    hand: Hand,
+    pub hand: Hand,
 }
 
 impl Human {
@@ -30,7 +30,7 @@ impl Human {
 pub struct Bot {
     pub name: String,
     pub seat: Seat,
-    hand: Hand,
+    pub hand: Hand,
 }
 
 impl Bot {
