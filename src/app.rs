@@ -1,5 +1,5 @@
 use crate::engine::game::GameState;
-use crate::interface::interface::Interface;
+use crate::interface::interface::{Interface, InterfaceState};
 use crate::structs::{Card, Hand, Rank, Seat, Suit};
 use crate::table::player::{Bot, Human, Player};
 use crate::table::team::Team;
@@ -64,6 +64,7 @@ fn initialize_game(num_cpus: usize) -> GameState {
 
 // application repr
 pub struct App {
+    pub running: bool,
     pub game_state: GameState,
     pub interface: Interface,
 }
@@ -73,6 +74,7 @@ impl App {
         let game_state = initialize_game(3);
         let interface = Interface::new();
         App {
+            running: true,
             game_state,
             interface,
         }
@@ -85,15 +87,18 @@ impl App {
         tui.init()?;
 
         // main application loop
-        loop {
+        while self.running {
             // draw tui
             tui.draw(self)?;
 
             // handle events
+            // TODO: implement per-state events. match on self.interface.state?
             if let Event::Key(event) = crossterm::event::read()? {
                 if event.kind == KeyEventKind::Press {
                     match event.code {
-                        KeyCode::Char('q') => break, // quit if 'q' is pressed
+                        KeyCode::Char('q') => self.quit()?, // quit if 'q' is pressed
+                        // TODO: update this to trigger NewGame state once it's implemented
+                        KeyCode::Char('n') => self.interface.set_state(InterfaceState::GameTable),
                         _ => {}
                     }
                 }
@@ -108,5 +113,10 @@ impl App {
 
     pub fn render(&mut self, frame: &mut ratatui::Frame) {
         let _ = self.interface.render(frame, &self.game_state);
+    }
+
+    pub fn quit(&mut self) -> Result<()> {
+        self.running = false;
+        Ok(())
     }
 }
