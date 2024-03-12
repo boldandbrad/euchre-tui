@@ -203,8 +203,10 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "clap",
  "crossterm",
+ "name_maker",
  "rand",
  "ratatui",
+ "tui-textarea",
 ]
 
 [[package]]
@@ -296,6 +298,15 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "name_maker"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1129eab433f8c6b8f028314ee23e8f7643ff9f8d847e888257117bafbfcf961"
+dependencies = [
+ "rand",
 ]
 
 [[package]]
@@ -534,6 +545,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "tui-textarea"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3e38ced1f941a9cfc923fbf2fe6858443c42cc5220bfd35bdd3648371e7bd8e"
+dependencies = [
+ "crossterm",
+ "ratatui",
+ "unicode-width",
 ]
 
 [[package]]

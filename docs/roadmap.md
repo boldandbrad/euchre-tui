@@ -7,7 +7,7 @@ often.
 ## Next Priorities
 
 - Get the CLI entrypoint setup
-- Implement start screen/menu
+- Implement splash screen/menu
 - Implement First Black Jack is first dealer
 - Implement main game loop
 - Implement main game tui
