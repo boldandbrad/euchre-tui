@@ -65,6 +65,7 @@ pub struct SplashScreen {
     menu_option_text: Vec<String>,
 }
 
+// TODO: add ability to traverse menu with arrow keys and select a button with enter
 impl SplashScreen {
     pub fn new() -> Self {
         let title = paragraph_from_multiline_string(TITLE).green();
@@ -76,7 +77,7 @@ impl SplashScreen {
         // menu_option_text.push(" Scores (c)".to_string());
         // menu_option_text.push(" About (a)".to_string());
         // menu_option_text.push(" Help (h)".to_string());
-        menu_option_text.push(" Quit (esc)".to_string());
+        menu_option_text.push(" Exit (Esc/Ctrl-C)".to_string());
         Self {
             title,
             menu_option_text,
