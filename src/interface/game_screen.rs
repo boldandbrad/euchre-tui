@@ -1,6 +1,8 @@
+use crate::interface::interface_callback::InterfaceCallback;
 use crate::interface::traits::Screen;
 use crate::table::player::{Bot, Human};
 use crate::{engine::game::GameState, table::player::Player};
+use crossterm::event::KeyEventKind;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     text::{Line, Text},
@@ -9,6 +11,7 @@ use ratatui::{
 };
 use std::io::Result;
 
+// TODO: handle in-game pause menu as popup panel here
 pub struct GameScreen {}
 
 impl GameScreen {
@@ -160,5 +163,17 @@ impl Screen for GameScreen {
             layout[3],
         );
         Ok(())
+    }
+
+    fn handle_key_event(
+        &mut self,
+        key_event: crossterm::event::KeyEvent,
+    ) -> Option<InterfaceCallback> {
+        if key_event.kind == KeyEventKind::Press {
+            match key_event.code {
+                _ => {}
+            }
+        }
+        None
     }
 }

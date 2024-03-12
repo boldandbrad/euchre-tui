@@ -1,5 +1,7 @@
+use super::interface_callback::InterfaceCallback;
 use crate::engine::game::GameState;
 use crate::interface::traits::Screen;
+use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     prelude::Margin,
@@ -74,7 +76,7 @@ impl SplashScreen {
         // menu_option_text.push(" Scores (c)".to_string());
         // menu_option_text.push(" About (a)".to_string());
         // menu_option_text.push(" Help (h)".to_string());
-        menu_option_text.push(" Quit (q)".to_string());
+        menu_option_text.push(" Quit (esc)".to_string());
         Self {
             title,
             menu_option_text,
@@ -134,6 +136,18 @@ impl Screen for SplashScreen {
         // app menu
         self.build_menu_panel(frame, layout[3])?;
         Ok(())
+    }
+    fn handle_key_event(
+        &mut self,
+        key_event: crossterm::event::KeyEvent,
+    ) -> Option<InterfaceCallback> {
+        if key_event.kind == KeyEventKind::Press {
+            match key_event.code {
+                KeyCode::Char('n') => return Some(InterfaceCallback::SetupNewGame),
+                _ => {}
+            }
+        }
+        None
     }
 }
 

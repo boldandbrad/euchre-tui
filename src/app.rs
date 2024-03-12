@@ -1,10 +1,11 @@
 use crate::engine::game::GameState;
-use crate::interface::interface::{Interface, InterfaceState};
+use crate::interface::interface::Interface;
+use crate::interface::interface_callback::InterfaceCallback;
 use crate::structs::{Card, Hand, Rank, Seat, Suit};
 use crate::table::player::{Bot, Human, Player};
 use crate::table::team::Team;
 use crate::tui::Tui;
-use crossterm::event::{Event, KeyCode, KeyEventKind};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use rand::seq::SliceRandom;
 use ratatui::prelude::{CrosstermBackend, Terminal};
 use std::io::{stdout, Result};
@@ -92,14 +93,17 @@ impl App {
             tui.draw(self)?;
 
             // handle events
-            // TODO: implement per-state events. match on self.interface.state?
-            if let Event::Key(event) = crossterm::event::read()? {
-                if event.kind == KeyEventKind::Press {
-                    match event.code {
-                        KeyCode::Char('q') => self.quit()?, // quit if 'q' is pressed
-                        // TODO: update this to trigger NewGame state once it's implemented
-                        KeyCode::Char('n') => self.interface.set_state(InterfaceState::GameTable),
-                        _ => {}
+            if let Event::Key(key_event) = crossterm::event::read()? {
+                match key_event.code {
+                    // exit app on `Esc` or `Ctrl-C`
+                    KeyCode::Esc => self.exit()?,
+                    KeyCode::Char('c') | KeyCode::Char('C')
+                        if key_event.modifiers == KeyModifiers::CONTROL =>
+                    {
+                        self.exit()?;
+                    }
+                    _ => {
+                        self.handle_key_event(key_event)?;
                     }
                 }
             }
@@ -111,11 +115,19 @@ impl App {
         Ok(())
     }
 
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> Result<()> {
+        let callback = self.interface.handle_key_event(key_event);
+        match callback {
+            Some(InterfaceCallback::Exit) => self.exit(),
+            _ => Ok(()),
+        }
+    }
+
     pub fn render(&mut self, frame: &mut ratatui::Frame) {
         let _ = self.interface.render(frame, &self.game_state);
     }
 
-    pub fn quit(&mut self) -> Result<()> {
+    pub fn exit(&mut self) -> Result<()> {
         self.running = false;
         Ok(())
     }
