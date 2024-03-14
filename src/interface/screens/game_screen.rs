@@ -1,5 +1,5 @@
 use crate::engine::game::Game;
-use crate::engine::table::player::{Bot, Human, Player};
+use crate::engine::table::player::Player;
 use crate::interface::{interface_callback::InterfaceCallback, screens::Screen};
 use crossterm::event::KeyEventKind;
 use ratatui::{
@@ -26,10 +26,15 @@ impl GameScreen {
         self.game = game;
     }
 
-    fn build_top_player_panel(&mut self, player: Bot, frame: &mut Frame, area: Rect) -> Result<()> {
+    fn build_top_player_panel(
+        &mut self,
+        player: Player,
+        frame: &mut Frame,
+        area: Rect,
+    ) -> Result<()> {
         // Build card lines
         let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand.cards {
+        for card in player.hand {
             let line = Line::from(card.get_name());
             lines.push(line);
         }
@@ -39,13 +44,13 @@ impl GameScreen {
 
     fn build_left_player_panel(
         &mut self,
-        player: Bot,
+        player: Player,
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
         // Build card lines
         let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand.cards {
+        for card in player.hand {
             let line = Line::from(card.get_name());
             lines.push(line);
         }
@@ -55,13 +60,13 @@ impl GameScreen {
 
     fn build_right_player_panel(
         &mut self,
-        player: Bot,
+        player: Player,
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
         // Build card lines
         let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand.cards {
+        for card in player.hand {
             let line = Line::from(card.get_name());
             lines.push(line);
         }
@@ -71,13 +76,13 @@ impl GameScreen {
 
     fn build_bottom_player_panel(
         &mut self,
-        user: Human,
+        user: Player,
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
         // Build card lines
         let mut lines = vec![Line::from(user.name), Line::from("")];
-        for card in user.hand.cards {
+        for card in user.hand {
             let line = Line::from(card.get_name());
             lines.push(line);
         }
@@ -113,7 +118,7 @@ impl Screen for GameScreen {
         // Top player area
         let top_player = self.game.user_team.players.get(1);
         let partner = match top_player {
-            Some(Player::Bot(value)) => value.clone(),
+            Some(player) => player.clone(),
             _ => panic!("player not here"),
         };
         self.build_top_player_panel(partner, frame, layout_top[1])?;
@@ -132,7 +137,7 @@ impl Screen for GameScreen {
         // Left player area
         let left_player = self.game.opposing_team.players.get(0);
         let partner = match left_player {
-            Some(Player::Bot(value)) => value.clone(),
+            Some(player) => player.clone(),
             _ => panic!("player not here"),
         };
         self.build_left_player_panel(partner, frame, layout_mid[0])?;
@@ -146,7 +151,7 @@ impl Screen for GameScreen {
         // Right player area
         let right_player = self.game.opposing_team.players.get(1);
         let partner = match right_player {
-            Some(Player::Bot(value)) => value.clone(),
+            Some(player) => player.clone(),
             _ => panic!("player not here"),
         };
         self.build_right_player_panel(partner, frame, layout_mid[2])?;
@@ -160,7 +165,7 @@ impl Screen for GameScreen {
         // Bottom player panel (user)
         let bottom_player = self.game.user_team.players.get(0);
         let user = match bottom_player {
-            Some(Player::Human(value)) => value.clone(),
+            Some(player) => player.clone(),
             _ => panic!("player not here"),
         };
         self.build_bottom_player_panel(user, frame, layout_bot[1])?;

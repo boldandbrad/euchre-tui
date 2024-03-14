@@ -1,46 +1,34 @@
-use crate::engine::{cards::Card, table::table::Seat};
+use crate::engine::cards::Card;
 
-// Define a player's hand
-#[derive(Debug, Clone)]
-pub struct Hand {
-    pub cards: Vec<Card>,
+#[derive(Clone)]
+pub enum PlayerType {
+    User,
+    Bot,
+    // Network,
 }
 
 #[derive(Clone)]
-pub enum Player {
-    Human(Human),
-    Bot(Bot),
-}
-
-pub trait Playable {
-    fn call_pickup() -> bool;
-    fn pick_up_card();
-    fn call_suit();
-    fn play_card();
-}
-
-#[derive(Clone)]
-pub struct Human {
+pub struct Player {
     pub name: String,
-    pub seat: Seat,
-    pub hand: Hand,
+    pub player_type: PlayerType,
+    pub hand: Vec<Card>,
 }
 
-impl Human {
-    pub fn new(name: String, seat: Seat, hand: Hand) -> Self {
-        Human { name, seat, hand }
+impl Player {
+    // create a new player
+    pub fn new(name: String, player_type: PlayerType, hand: Vec<Card>) -> Self {
+        Player {
+            name,
+            player_type,
+            hand,
+        }
     }
-}
 
-#[derive(Clone)]
-pub struct Bot {
-    pub name: String,
-    pub seat: Seat,
-    pub hand: Hand,
-}
+    pub fn call_pickup() {}
 
-impl Bot {
-    pub fn new(name: String, seat: Seat, hand: Hand) -> Self {
-        Bot { name, seat, hand }
-    }
+    pub fn pickup_card() {}
+
+    pub fn call_suit() {}
+
+    pub fn play_card() {}
 }
