@@ -1,4 +1,3 @@
-use crate::engine::game::GameState;
 use crate::interface::{
     game_screen::GameScreen, interface_callback::InterfaceCallback, setup_screen::SetupScreen,
     splash_screen::SplashScreen, traits::Screen,
@@ -38,8 +37,8 @@ impl Interface {
         self.state = state;
     }
 
-    pub fn render(&mut self, frame: &mut Frame, game_state: &GameState) -> Result<()> {
-        self.get_active_screen_mut().render(frame, game_state)?;
+    pub fn render(&mut self, frame: &mut Frame) -> Result<()> {
+        self.get_active_screen_mut().render(frame)?;
         Ok(())
     }
 
@@ -49,7 +48,10 @@ impl Interface {
     ) -> Option<InterfaceCallback> {
         let callback = self.get_active_screen_mut().handle_key_event(key_event);
         match callback {
-            Some(InterfaceCallback::StartGame) => self.set_state(InterfaceState::GameTable),
+            Some(InterfaceCallback::StartGame { game }) => {
+                self.set_state(InterfaceState::GameTable);
+                self.game_screen.set_game(game);
+            }
             Some(InterfaceCallback::SetupNewGame) => self.set_state(InterfaceState::GameSetup),
             Some(InterfaceCallback::QuitToSplash) => self.set_state(InterfaceState::Splash),
             _ => return callback,

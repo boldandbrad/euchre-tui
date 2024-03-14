@@ -1,4 +1,4 @@
-use crate::engine::game::GameState;
+use crate::engine::game::Game;
 use crate::interface::{
     components::InputStyle, interface_callback::InterfaceCallback, traits::Screen,
 };
@@ -42,7 +42,6 @@ impl SetupState {
     }
 }
 
-// TODO: implement confirming inputs and initializing a new game state / passing data to game_screen
 #[derive(Debug, Default)]
 pub struct SetupScreen {
     pub state: SetupState,
@@ -159,16 +158,25 @@ impl SetupScreen {
         }
     }
 
-    fn submit(&mut self) {
+    fn init_game(&mut self) -> Game {
         let rng = RandomNameGenerator::init();
         self.partner_name = rng.generate().first_name;
         self.opp1_name = rng.generate().first_name;
         self.opp2_name = rng.generate().first_name;
+
+        Game::new(
+            self.user_name_textarea.lines()[0].trim().to_string(),
+            self.partner_name.clone(),
+            self.opp1_name.clone(),
+            self.opp2_name.clone(),
+            self.team_name_textarea.lines()[0].trim().to_string(),
+            "Bad Guys".to_string(),
+        )
     }
 }
 
 impl Screen for SetupScreen {
-    fn render(&mut self, frame: &mut Frame, _game_state: &GameState) -> Result<()> {
+    fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -203,8 +211,13 @@ impl Screen for SetupScreen {
                 }
                 KeyCode::Enter => match self.state {
                     SetupState::Confirm => {
-                        self.submit();
-                        return Some(InterfaceCallback::StartGame);
+                        if validate_textarea(&mut self.user_name_textarea)
+                            && validate_textarea(&mut self.team_name_textarea)
+                        {
+                            return Some(InterfaceCallback::StartGame {
+                                game: self.init_game(),
+                            });
+                        }
                     }
                     _ => self.set_state(self.state.next_step()),
                 },

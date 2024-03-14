@@ -1,4 +1,4 @@
-use crate::engine::game::GameState;
+use crate::engine::game::Game;
 use crate::interface::{interface_callback::InterfaceCallback, traits::Screen};
 use crate::table::player::{Bot, Human, Player};
 use crossterm::event::KeyEventKind;
@@ -11,11 +11,19 @@ use ratatui::{
 use std::io::Result;
 
 // TODO: handle in-game pause menu as popup panel here
-pub struct GameScreen {}
+pub struct GameScreen {
+    game: Game,
+}
 
 impl GameScreen {
     pub fn new() -> Self {
-        GameScreen {}
+        GameScreen {
+            game: Game::default(),
+        }
+    }
+
+    pub fn set_game(&mut self, game: Game) {
+        self.game = game;
     }
 
     fn build_top_player_panel(&mut self, player: Bot, frame: &mut Frame, area: Rect) -> Result<()> {
@@ -79,7 +87,7 @@ impl GameScreen {
 }
 
 impl Screen for GameScreen {
-    fn render(&mut self, frame: &mut Frame, game_state: &GameState) -> Result<()> {
+    fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -102,7 +110,7 @@ impl Screen for GameScreen {
         );
 
         // Top player area
-        let top_player = game_state.user_team.players.get(1);
+        let top_player = self.game.user_team.players.get(1);
         let partner = match top_player {
             Some(Player::Bot(value)) => value.clone(),
             _ => panic!("player not here"),
@@ -121,7 +129,7 @@ impl Screen for GameScreen {
             .split(layout[1]);
 
         // Left player area
-        let left_player = game_state.opposing_team.players.get(0);
+        let left_player = self.game.opposing_team.players.get(0);
         let partner = match left_player {
             Some(Player::Bot(value)) => value.clone(),
             _ => panic!("player not here"),
@@ -135,7 +143,7 @@ impl Screen for GameScreen {
         );
 
         // Right player area
-        let right_player = game_state.opposing_team.players.get(1);
+        let right_player = self.game.opposing_team.players.get(1);
         let partner = match right_player {
             Some(Player::Bot(value)) => value.clone(),
             _ => panic!("player not here"),
@@ -149,7 +157,7 @@ impl Screen for GameScreen {
             .split(layout[2]);
 
         // Bottom player panel (user)
-        let bottom_player = game_state.user_team.players.get(0);
+        let bottom_player = self.game.user_team.players.get(0);
         let user = match bottom_player {
             Some(Player::Human(value)) => value.clone(),
             _ => panic!("player not here"),

@@ -1,4 +1,3 @@
-use crate::engine::game::GameState;
 use crate::interface::{interface_callback::InterfaceCallback, traits::Screen};
 use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
@@ -113,7 +112,7 @@ impl SplashScreen {
 }
 
 impl Screen for SplashScreen {
-    fn render(&mut self, frame: &mut Frame, _game_state: &GameState) -> Result<()> {
+    fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
