@@ -3,5 +3,5 @@ pub enum InterfaceCallback {
     Exit,
     QuitToSplash,
     SetupNewGame,
-    PlayGame,
+    StartGame,
 }

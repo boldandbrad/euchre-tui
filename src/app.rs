@@ -1,15 +1,18 @@
 use crate::engine::game::GameState;
-use crate::interface::interface::Interface;
-use crate::interface::interface_callback::InterfaceCallback;
+use crate::interface::{interface::Interface, interface_callback::InterfaceCallback};
 use crate::structs::{Card, Hand, Rank, Seat, Suit};
-use crate::table::player::{Bot, Human, Player};
-use crate::table::team::Team;
+use crate::table::{
+    player::{Bot, Human, Player},
+    team::Team,
+};
 use crate::tui::Tui;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use rand::seq::SliceRandom;
 use ratatui::prelude::{CrosstermBackend, Terminal};
-use std::io::{stdout, Result};
-use std::time::Duration;
+use std::{
+    io::{stdout, Result},
+    time::Duration,
+};
 
 // Initialize the game state with a specified number of CPU players
 fn initialize_game(num_cpus: usize) -> GameState {
@@ -108,6 +111,7 @@ impl App {
                 }
             }
 
+            // TODO: is this necessary?
             // wait for a short moment before the next iteration
             std::thread::sleep(Duration::from_millis(16));
         }

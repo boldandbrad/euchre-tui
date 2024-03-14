@@ -1,39 +1,41 @@
 use crate::engine::game::GameState;
-use crate::interface::interface_callback::InterfaceCallback;
-use crate::interface::traits::Screen;
+use crate::interface::{
+    components::InputStyle, interface_callback::InterfaceCallback, traits::Screen,
+};
 use crossterm::event::{KeyCode, KeyEventKind};
 use name_maker::RandomNameGenerator;
 use ratatui::{
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
-    prelude::Margin,
+    layout::{Constraint, Direction, Layout, Rect},
     style::{Modifier, Style},
-    text::{Line, Text},
     widgets::{block::Block, BorderType, Borders, Paragraph},
     Frame,
 };
 use std::io::Result;
 use tui_textarea::TextArea;
 
+const MIN_INPUT_LENGTH: usize = 3;
+const MAX_INPUT_LENGTH: usize = 12;
+
 #[derive(Debug, Default, PartialOrd, PartialEq)]
 pub enum SetupState {
     #[default]
     UserName,
     TeamName,
-    Done,
+    Confirm,
 }
 
 impl SetupState {
     pub fn next_step(&self) -> Self {
         match self {
             SetupState::UserName => SetupState::TeamName,
-            SetupState::TeamName => SetupState::Done,
-            SetupState::Done => SetupState::Done,
+            SetupState::TeamName => SetupState::Confirm,
+            SetupState::Confirm => SetupState::Confirm,
         }
     }
 
     pub fn prev_step(&self) -> Self {
         match self {
-            SetupState::Done => SetupState::TeamName,
+            SetupState::Confirm => SetupState::TeamName,
             SetupState::TeamName => SetupState::UserName,
             SetupState::UserName => SetupState::UserName,
         }
@@ -68,6 +70,7 @@ impl SetupScreen {
                 .border_style(text_area_style)
                 .title("Your name"),
         );
+        user_name_textarea.set_cursor_line_style(Style::default());
 
         let mut team_name_textarea = TextArea::default();
         team_name_textarea.set_block(
@@ -77,6 +80,8 @@ impl SetupScreen {
                 .border_style(text_area_style)
                 .title("Team name"),
         );
+        team_name_textarea.set_cursor_line_style(Style::default());
+
         SetupScreen {
             state: SetupState::default(),
             user_name_textarea,
@@ -89,6 +94,69 @@ impl SetupScreen {
 
     fn set_state(&mut self, state: SetupState) {
         self.state = state;
+    }
+
+    fn get_active_textarea_mut(&mut self) -> &mut TextArea<'static> {
+        match self.state {
+            SetupState::UserName => &mut self.user_name_textarea,
+            SetupState::TeamName => &mut self.team_name_textarea,
+            SetupState::Confirm => unreachable!(),
+        }
+    }
+
+    fn build_setup_form(&mut self, frame: &mut Frame, area: Rect) {
+        let layout_columns = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([
+                Constraint::Fill(1),
+                Constraint::Length(42),
+                Constraint::Fill(1),
+            ])
+            .split(area);
+
+        let layout_form = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Length(3),
+            ])
+            .split(layout_columns[1]);
+
+        // text input areas
+        match self.state {
+            SetupState::UserName => {
+                activate_textarea(&mut self.user_name_textarea);
+                deactivate_textarea(&mut self.team_name_textarea);
+            }
+            SetupState::TeamName => {
+                deactivate_textarea(&mut self.user_name_textarea);
+                activate_textarea(&mut self.team_name_textarea);
+            }
+            SetupState::Confirm => {
+                deactivate_textarea(&mut self.user_name_textarea);
+                deactivate_textarea(&mut self.team_name_textarea);
+            }
+        }
+        frame.render_widget(self.user_name_textarea.widget(), layout_form[0]);
+        frame.render_widget(self.team_name_textarea.widget(), layout_form[1]);
+
+        // submit message
+        if self.state == SetupState::Confirm {
+            if validate_textarea(&mut self.user_name_textarea)
+                && validate_textarea(&mut self.team_name_textarea)
+            {
+                frame.render_widget(
+                    Paragraph::new("Ready to begin? (Enter)").centered(),
+                    layout_form[2],
+                );
+            } else {
+                frame.render_widget(
+                    Paragraph::new("Fix invalid values to continue.").centered(),
+                    layout_form[2],
+                );
+            }
+        }
     }
 
     fn submit(&mut self) {
@@ -111,10 +179,13 @@ impl Screen for SetupScreen {
             ])
             .split(frame.size());
 
-        // TODO: add a screen header with a description of the screen and how to use it
-        // TODO: create layout similar to splash screen with centered text areas and paragraphs
+        // TODO: make screen header fancier
+        // TODO: add a description of the screen and how to use it
+        // app title
+        frame.render_widget(Paragraph::new("Game Setup").centered(), layout[1]);
 
-        frame.render_widget(self.user_name_textarea.widget(), layout[0]);
+        // game setup form
+        self.build_setup_form(frame, layout[3]);
         Ok(())
     }
 
@@ -123,21 +194,50 @@ impl Screen for SetupScreen {
         key_event: crossterm::event::KeyEvent,
     ) -> Option<InterfaceCallback> {
         if key_event.kind == KeyEventKind::Press {
-            match self.state {
-                SetupState::UserName => match key_event.code {
-                    // TODO: this should be global to all states?
-                    // TODO: how to handle moving to previous?
-                    KeyCode::Enter => {
-                        self.set_state(self.state.next_step());
+            match key_event.code {
+                KeyCode::Up | KeyCode::BackTab => {
+                    self.set_state(self.state.prev_step());
+                }
+                KeyCode::Down | KeyCode::Tab => {
+                    self.set_state(self.state.next_step());
+                }
+                KeyCode::Enter => match self.state {
+                    SetupState::Confirm => {
+                        self.submit();
+                        return Some(InterfaceCallback::StartGame);
                     }
-                    _ => {
-                        // TODO: validate input and handle special keys
-                        self.user_name_textarea.input(key_event);
-                    }
+                    _ => self.set_state(self.state.next_step()),
                 },
-                _ => {}
+                _ => {
+                    self.get_active_textarea_mut().input(key_event);
+                    // TODO: handle special keys
+                }
             };
+            validate_textarea(&mut self.user_name_textarea);
+            validate_textarea(&mut self.team_name_textarea);
         }
         None
+    }
+}
+
+fn activate_textarea(textarea: &mut TextArea<'_>) {
+    textarea.set_cursor_style(Style::default().add_modifier(Modifier::REVERSED));
+}
+
+fn deactivate_textarea(textarea: &mut TextArea<'_>) {
+    textarea.set_cursor_style(Style::default());
+}
+
+fn validate_textarea(textarea: &mut TextArea<'_>) -> bool {
+    let text = textarea.lines()[0].trim();
+    if text.len() < MIN_INPUT_LENGTH {
+        textarea.set_style(InputStyle::INPUT_ERROR);
+        false
+    } else if text.len() > MAX_INPUT_LENGTH {
+        textarea.set_style(InputStyle::INPUT_ERROR);
+        false
+    } else {
+        textarea.set_style(InputStyle::INPUT_DEFAULT);
+        true
     }
 }

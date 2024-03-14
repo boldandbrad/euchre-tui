@@ -1,9 +1,8 @@
 use crate::engine::game::GameState;
-use crate::interface::game_screen::GameScreen;
-use crate::interface::interface_callback::InterfaceCallback;
-use crate::interface::setup_screen::SetupScreen;
-use crate::interface::splash_screen::SplashScreen;
-use crate::interface::traits::Screen;
+use crate::interface::{
+    game_screen::GameScreen, interface_callback::InterfaceCallback, setup_screen::SetupScreen,
+    splash_screen::SplashScreen, traits::Screen,
+};
 use ratatui::Frame;
 use std::io::Result;
 
@@ -50,7 +49,7 @@ impl Interface {
     ) -> Option<InterfaceCallback> {
         let callback = self.get_active_screen_mut().handle_key_event(key_event);
         match callback {
-            Some(InterfaceCallback::PlayGame) => self.set_state(InterfaceState::GameTable),
+            Some(InterfaceCallback::StartGame) => self.set_state(InterfaceState::GameTable),
             Some(InterfaceCallback::SetupNewGame) => self.set_state(InterfaceState::GameSetup),
             Some(InterfaceCallback::QuitToSplash) => self.set_state(InterfaceState::Splash),
             _ => return callback,

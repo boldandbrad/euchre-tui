@@ -1,3 +1,4 @@
+pub mod components;
 pub mod game_screen;
 pub mod interface;
 pub mod interface_callback;
