@@ -10,6 +10,8 @@ use ratatui::{
 };
 use std::io::Result;
 
+// game screen repr
+#[derive(Default)]
 // TODO: handle in-game pause menu as popup panel here
 pub struct GameScreen {
     game: Game,
@@ -135,7 +137,7 @@ impl Screen for GameScreen {
             .split(layout[1]);
 
         // Left player area
-        let left_player = self.game.opposing_team.players.get(0);
+        let left_player = self.game.opposing_team.players.first();
         let partner = match left_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -163,7 +165,7 @@ impl Screen for GameScreen {
             .split(layout[2]);
 
         // Bottom player panel (user)
-        let bottom_player = self.game.user_team.players.get(0);
+        let bottom_player = self.game.user_team.players.first();
         let user = match bottom_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -183,6 +185,7 @@ impl Screen for GameScreen {
         key_event: crossterm::event::KeyEvent,
     ) -> Option<InterfaceCallback> {
         if key_event.kind == KeyEventKind::Press {
+            #[allow(clippy::match_single_binding)] // this will be populated in the future
             match key_event.code {
                 _ => {}
             }

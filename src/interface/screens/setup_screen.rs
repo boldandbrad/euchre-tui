@@ -16,6 +16,7 @@ use tui_textarea::TextArea;
 const MIN_INPUT_LENGTH: usize = 3;
 const MAX_INPUT_LENGTH: usize = 12;
 
+// setup screen state repr
 #[derive(Debug, Default, PartialOrd, PartialEq)]
 pub enum SetupState {
     #[default]
@@ -42,6 +43,7 @@ impl SetupState {
     }
 }
 
+// setup screen repr
 #[derive(Debug, Default)]
 pub struct SetupScreen {
     pub state: SetupState,
@@ -248,10 +250,7 @@ fn deactivate_textarea(textarea: &mut TextArea<'_>) {
 
 fn validate_textarea(textarea: &mut TextArea<'_>) -> bool {
     let text = textarea.lines()[0].trim();
-    if text.len() < MIN_INPUT_LENGTH {
-        textarea.set_style(InputStyle::INPUT_ERROR);
-        false
-    } else if text.len() > MAX_INPUT_LENGTH {
+    if text.len() < MIN_INPUT_LENGTH || text.len() > MAX_INPUT_LENGTH {
         textarea.set_style(InputStyle::INPUT_ERROR);
         false
     } else {

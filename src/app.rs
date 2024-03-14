@@ -1,4 +1,4 @@
-use crate::interface::{interface::Interface, interface_callback::InterfaceCallback};
+use crate::interface::{interface_callback::InterfaceCallback, Interface};
 use crate::tui::Tui;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use ratatui::prelude::{CrosstermBackend, Terminal};
@@ -8,6 +8,7 @@ use std::{
 };
 
 // application repr
+#[derive(Default)]
 pub struct App {
     pub running: bool,
     pub interface: Interface,

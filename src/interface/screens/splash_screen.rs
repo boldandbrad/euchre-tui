@@ -11,28 +11,28 @@ use ratatui::{
 use std::io::Result;
 
 #[allow(dead_code)]
-const TITLE_SMALL: [&'static str; 4] = [
+const TITLE_SMALL: [&str; 4] = [
     "              _                _        _",
     "  ___ _  _ __| |_  _ _ ___ ___| |_ _  _(_)",
     " / -_) || / _| ' \\| '_/ -_)___|  _| || | |",
     " \\___|\\_,_\\__|_||_|_| \\___|    \\__|\\_,_|_|",
 ];
 #[allow(dead_code)]
-const TITLE_SMALL_BLOCK: [&'static str; 4] = [
+const TITLE_SMALL_BLOCK: [&str; 4] = [
     "             _               _       _ ",
     " ___ _ _ ___| |_ ___ ___ ___| |_ _ _|_|",
     "| -_| | |  _|   |  _| -_|___|  _| | | |",
     "|___|___|___|_|_|_| |___|   |_| |___|_|",
 ];
 #[allow(dead_code)]
-const TITLE_SMALL_SLANT: [&'static str; 4] = [
+const TITLE_SMALL_SLANT: [&str; 4] = [
     "               __               __       _",
     " ___ __ ______/ /  _______ ____/ /___ __(_)",
     "/ -_) // / __/ _ \\/ __/ -_)___/ __/ // / /",
     "\\__/\\_,_/\\__/_//_/_/  \\__/    \\__/\\_,_/_/",
 ];
 #[allow(dead_code)]
-const TITLE: [&'static str; 5] = [
+const TITLE: [&str; 5] = [
     "                  _                    _         _ ",
     "   ___ _   _  ___| |__  _ __ ___      | |_ _   _(_)",
     "  / _ \\ | | |/ __| '_ \\| '__/ _ \\_____| __| | | | |",
@@ -40,7 +40,7 @@ const TITLE: [&'static str; 5] = [
     "  \\___|\\__,_|\\___|_| |_|_|  \\___|      \\__|\\__,_|_|",
 ];
 #[allow(dead_code)]
-const TITLE_BLOCK: [&'static str; 5] = [
+const TITLE_BLOCK: [&str; 5] = [
     "               _                    _         _ ",
     " ___ _   _ ___| |___ ____ ___     _| |_ _   _|_|",
     "| _ | | | |  _|  _  |  __| _ |___|_   _| | | | |",
@@ -48,7 +48,7 @@ const TITLE_BLOCK: [&'static str; 5] = [
     "|___|_____|___|_| |_|_|  |___|     |_| |_____|_|",
 ];
 #[allow(dead_code)]
-const TITLE_SLANT: [&'static str; 5] = [
+const TITLE_SLANT: [&str; 5] = [
     "                   __                    __        _ ",
     "  ___  __  _______/ /_  ________        / /___  __(_)",
     " / _ \\/ / / / ___/ __ \\/ ___/ _ \\______/ __/ / / / / ",
@@ -58,6 +58,8 @@ const TITLE_SLANT: [&'static str; 5] = [
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+// splash screen repr
+#[derive(Default)]
 pub struct SplashScreen {
     title: Paragraph<'static>,
     menu_option_text: Vec<String>,
@@ -67,15 +69,16 @@ pub struct SplashScreen {
 impl SplashScreen {
     pub fn new() -> Self {
         let title = paragraph_from_multiline_string(TITLE).green();
-        let mut menu_option_text = vec![];
-        menu_option_text.push(" New Game (n)".to_string());
-        // menu_option_text.push(" Resume Game (l)".to_string());
-        // menu_option_text.push(" Learn Euchre (e)".to_string());
-        // menu_option_text.push(" Settings (s)".to_string());
-        // menu_option_text.push(" Scores (c)".to_string());
-        // menu_option_text.push(" About (a)".to_string());
-        // menu_option_text.push(" Help (h)".to_string());
-        menu_option_text.push(" Exit (Esc/Ctrl-C)".to_string());
+        let menu_option_text = vec![
+            " New Game (n)".to_string(),
+            // " Resume Game (l)".to_string(),
+            // " Learn Euchre (e)".to_string(),
+            // " Settings (s)".to_string(),
+            // " Scores (c)".to_string(),
+            // " About (a)".to_string(),
+            // " Help (h)".to_string(),
+            " Exit (Esc/Ctrl-C)".to_string(),
+        ];
         Self {
             title,
             menu_option_text,
@@ -141,6 +144,7 @@ impl Screen for SplashScreen {
         key_event: crossterm::event::KeyEvent,
     ) -> Option<InterfaceCallback> {
         if key_event.kind == KeyEventKind::Press {
+            #[allow(clippy::single_match)] // more will be added to this in the future
             match key_event.code {
                 KeyCode::Char('n') => return Some(InterfaceCallback::SetupNewGame),
                 _ => {}

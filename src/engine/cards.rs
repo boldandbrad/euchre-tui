@@ -107,7 +107,7 @@ impl Card {
     pub fn get_name(self) -> String {
         let suit_symbol = self.suit.get_symbol();
         let face_symbol = self.face.get_symbol();
-        return face_symbol.to_string() + " of " + &suit_symbol.to_string();
+        face_symbol.to_string() + " of " + &suit_symbol.to_string()
     }
 
     pub fn get_color(self) -> Color {
@@ -186,6 +186,12 @@ impl Deck {
 
     pub fn deal(&mut self, num_cards: usize) -> Vec<Card> {
         self.cards.drain(0..num_cards).collect()
+    }
+}
+
+impl Default for Deck {
+    fn default() -> Self {
+        Deck::new()
     }
 }
 
