@@ -4,10 +4,10 @@ use crate::interface::{
         game_screen::GameScreen, setup_screen::SetupScreen, splash_screen::SplashScreen, Screen,
     },
 };
-
 use ratatui::Frame;
 use std::io::Result;
 
+// interface state repr
 #[derive(Default)]
 pub enum InterfaceState {
     #[default]
@@ -16,6 +16,7 @@ pub enum InterfaceState {
     GameTable,
 }
 
+// interface repr
 pub struct Interface {
     state: InterfaceState,
     pub splash_screen: SplashScreen,
@@ -24,6 +25,7 @@ pub struct Interface {
 }
 
 impl Interface {
+    // create a new interface instance
     pub fn new() -> Self {
         let splash_screen = SplashScreen::new();
         let setup_screen = SetupScreen::new();
@@ -36,15 +38,18 @@ impl Interface {
         }
     }
 
+    // set the interface state
     pub fn set_state(&mut self, state: InterfaceState) {
         self.state = state;
     }
 
+    // render the interface to a frame
     pub fn render(&mut self, frame: &mut Frame) -> Result<()> {
         self.get_active_screen_mut().render(frame)?;
         Ok(())
     }
 
+    // handle key events based on interface state
     pub fn handle_key_event(
         &mut self,
         key_event: crossterm::event::KeyEvent,
@@ -62,6 +67,7 @@ impl Interface {
         None
     }
 
+    // get mutable reference to the active screen
     fn get_active_screen_mut(&mut self) -> &mut dyn Screen {
         match self.state {
             InterfaceState::Splash => &mut self.splash_screen,

@@ -14,6 +14,7 @@ pub struct App {
 }
 
 impl App {
+    // create a new application instance
     pub fn new() -> Self {
         let interface = Interface::new();
         App {
@@ -22,7 +23,9 @@ impl App {
         }
     }
 
+    // run the application
     pub fn run(&mut self) -> Result<()> {
+        // initialize tui
         let terminal: Terminal<CrosstermBackend<std::io::Stdout>> =
             Terminal::new(CrosstermBackend::new(stdout()))?;
         let mut tui = Tui::new(terminal);
@@ -53,10 +56,13 @@ impl App {
             // wait for a short moment before the next iteration
             std::thread::sleep(Duration::from_millis(16));
         }
+
+        // exit tui
         tui.exit()?;
         Ok(())
     }
 
+    // handle application key events
     fn handle_key_event(&mut self, key_event: KeyEvent) -> Result<()> {
         let callback = self.interface.handle_key_event(key_event);
         match callback {
@@ -65,10 +71,12 @@ impl App {
         }
     }
 
+    // render the application's interface
     pub fn render(&mut self, frame: &mut ratatui::Frame) {
         let _ = self.interface.render(frame);
     }
 
+    // exit the application
     pub fn exit(&mut self) -> Result<()> {
         self.running = false;
         Ok(())

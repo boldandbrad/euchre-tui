@@ -1,4 +1,4 @@
-use super::player::Player;
+use crate::engine::table::player::Player;
 
 #[derive(Clone)]
 pub struct Team {

@@ -48,9 +48,3 @@ impl Card {
         return rank_symbol.to_string() + " of " + &suit_symbol.to_string();
     }
 }
-
-// Define a player's hand
-#[derive(Debug, Clone)]
-pub struct Hand {
-    pub cards: Vec<Card>,
-}

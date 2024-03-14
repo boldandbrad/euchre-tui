@@ -14,7 +14,7 @@ pub struct Tui {
 }
 
 impl Tui {
-    // create a new tui
+    // create a new tui instance
     pub fn new(terminal: Terminal<CrosstermBackend<std::io::Stdout>>) -> Self {
         Self { terminal }
     }
