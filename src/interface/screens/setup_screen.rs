@@ -1,6 +1,6 @@
 use crate::engine::game::Game;
 use crate::interface::{
-    components::InputStyle, interface_callback::InterfaceCallback, screens::Screen,
+    components::inputs::InputStyle, interface_callback::InterfaceCallback, screens::Screen,
 };
 use crossterm::event::{KeyCode, KeyEventKind};
 use name_maker::RandomNameGenerator;

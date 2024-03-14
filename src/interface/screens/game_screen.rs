@@ -99,6 +99,7 @@ impl Screen for GameScreen {
             .split(frame.size());
 
         // Top Row
+        // TODO: implement score boards
         let layout_top = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(Constraint::from_fills([1, 2, 1]))
