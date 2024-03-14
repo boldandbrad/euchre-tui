@@ -222,8 +222,13 @@ impl Screen for SetupScreen {
                     _ => self.set_state(self.state.next_step()),
                 },
                 _ => {
-                    self.get_active_textarea_mut().input(key_event);
                     // TODO: handle special keys
+                    match self.state {
+                        SetupState::UserName | SetupState::TeamName => {
+                            self.get_active_textarea_mut().input(key_event);
+                        }
+                        _ => {}
+                    }
                 }
             };
             validate_textarea(&mut self.user_name_textarea);
