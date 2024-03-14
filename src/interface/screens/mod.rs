@@ -1,3 +1,7 @@
+pub mod game_screen;
+pub mod setup_screen;
+pub mod splash_screen;
+
 use crate::interface::interface_callback::InterfaceCallback;
 use crossterm::event::KeyEvent;
 use ratatui::Frame;

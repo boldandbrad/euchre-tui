@@ -1,7 +1,10 @@
 use crate::interface::{
-    game_screen::GameScreen, interface_callback::InterfaceCallback, setup_screen::SetupScreen,
-    splash_screen::SplashScreen, traits::Screen,
+    interface_callback::InterfaceCallback,
+    screens::{
+        game_screen::GameScreen, setup_screen::SetupScreen, splash_screen::SplashScreen, Screen,
+    },
 };
+
 use ratatui::Frame;
 use std::io::Result;
 

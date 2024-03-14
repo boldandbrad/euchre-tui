@@ -1,4 +1,10 @@
-use crate::structs::{Hand, Seat};
+use crate::engine::{cards::Card, table::table::Seat};
+
+// Define a player's hand
+#[derive(Debug, Clone)]
+pub struct Hand {
+    pub cards: Vec<Card>,
+}
 
 #[derive(Clone)]
 pub enum Player {

@@ -1,4 +1,4 @@
-use crate::interface::{interface_callback::InterfaceCallback, traits::Screen};
+use crate::interface::{interface_callback::InterfaceCallback, screens::Screen};
 use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},

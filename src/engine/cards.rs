@@ -54,11 +54,3 @@ impl Card {
 pub struct Hand {
     pub cards: Vec<Card>,
 }
-
-#[derive(Clone)]
-pub enum Seat {
-    Bottom,
-    Left,
-    Top,
-    Right,
-}

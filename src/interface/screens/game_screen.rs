@@ -1,6 +1,6 @@
 use crate::engine::game::Game;
-use crate::interface::{interface_callback::InterfaceCallback, traits::Screen};
-use crate::table::player::{Bot, Human, Player};
+use crate::engine::table::player::{Bot, Human, Player};
+use crate::interface::{interface_callback::InterfaceCallback, screens::Screen};
 use crossterm::event::KeyEventKind;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},

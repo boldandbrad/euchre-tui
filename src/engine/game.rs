@@ -1,6 +1,7 @@
-use crate::structs::{Card, Hand, Rank, Seat, Suit};
-use crate::table::{
-    player::{Bot, Human, Player},
+use crate::engine::cards::{Card, Rank, Suit};
+use crate::engine::table::{
+    player::{Bot, Hand, Human, Player},
+    table::Seat,
     team::Team,
 };
 use rand::seq::SliceRandom;
