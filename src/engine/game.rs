@@ -74,7 +74,6 @@ impl Game {
 
     pub fn next_player_index(&self) -> usize {
         (self.current_player_index + 1) % 4
-        // should this be % 2?
     }
 
     pub fn next_turn(&mut self) {

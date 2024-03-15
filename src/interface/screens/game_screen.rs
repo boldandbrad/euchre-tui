@@ -152,13 +152,22 @@ impl Screen for GameScreen {
         };
         self.build_bottom_player_panel(user, frame, layout_bot[1])?;
 
-        // TODO: eventually remove
+        // TODO: eventually remove debug area or hide behind cli flag
         // Debug area
         let debug_block = Block::default().title("Debug");
         let debug_area = debug_block.inner(layout_bot[2]);
         frame.render_widget(debug_block, layout_bot[2]);
         frame.render_widget(
-            Paragraph::new("Tick Count: ".to_string() + self.tick_count.to_string().as_str()),
+            Text::from(vec![
+                Line::from("Tick Count: ".to_string() + self.tick_count.to_string().as_str()),
+                Line::from(
+                    "Current Player Index: ".to_string()
+                        + self.game.current_player_index.to_string().as_str(),
+                ),
+                Line::from(
+                    "Current Player Name: ".to_string() + self.game.current_player().name.as_str(),
+                ),
+            ]),
             debug_area,
         );
 
@@ -199,8 +208,16 @@ impl Screen for GameScreen {
     }
 
     fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
-        if !self.is_paused {
-            self.tick_count += 1;
+        match self.is_paused {
+            false => {
+                if self.tick_count >= 20 {
+                    self.game.next_turn();
+                    self.tick_count = 0
+                } else {
+                    self.tick_count += 1
+                }
+            }
+            true => {}
         }
         None
     }
