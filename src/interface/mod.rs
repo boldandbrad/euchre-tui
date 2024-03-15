@@ -72,6 +72,12 @@ impl Interface {
         None
     }
 
+    // handle tick events based on interface state
+    pub fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
+        let _callback = self.get_active_screen_mut().handle_tick_event();
+        None
+    }
+
     // get mutable reference to the active screen
     fn get_active_screen_mut(&mut self) -> &mut dyn Screen {
         match self.state {

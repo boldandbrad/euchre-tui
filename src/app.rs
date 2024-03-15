@@ -4,23 +4,26 @@ use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use ratatui::prelude::{CrosstermBackend, Terminal};
 use std::{
     io::{stdout, Result},
-    time::Duration,
+    time::{Duration, Instant},
 };
 
 // application repr
 #[derive(Default)]
 pub struct App {
-    running: bool,
+    is_running: bool,
     interface: Interface,
+    tick_rate: Duration,
 }
 
 impl App {
     // create a new application instance
     pub fn new() -> Self {
         let interface = Interface::new();
+        let tick_rate = Duration::from_millis(250);
         App {
-            running: true,
+            is_running: true,
             interface,
+            tick_rate,
         }
     }
 
@@ -32,12 +35,15 @@ impl App {
         let mut tui = Tui::new(terminal);
         tui.init()?;
 
+        // initialize tick tracker
+        let mut last_tick = Instant::now();
+
         // main application loop
-        while self.running {
+        while self.is_running {
             // draw tui
             tui.draw(self)?;
 
-            // handle events
+            // handle key events
             if crossterm::event::poll(Duration::from_millis(16))? {
                 if let Event::Key(key_event) = crossterm::event::read()? {
                     match key_event.code {
@@ -53,6 +59,12 @@ impl App {
                         }
                     }
                 }
+            }
+
+            // handle tick events
+            if last_tick.elapsed() >= self.tick_rate {
+                self.interface.handle_tick_event();
+                last_tick = Instant::now();
             }
         }
 
@@ -77,7 +89,7 @@ impl App {
 
     // exit the application
     pub fn exit(&mut self) -> Result<()> {
-        self.running = false;
+        self.is_running = false;
         Ok(())
     }
 }

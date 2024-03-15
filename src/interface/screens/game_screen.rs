@@ -1,26 +1,29 @@
 use crate::engine::game::Game;
 use crate::engine::table::player::Player;
 use crate::interface::{interface_callback::InterfaceCallback, screens::Screen};
-use crossterm::event::KeyEventKind;
+use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     text::{Line, Text},
-    widgets::{block::Block, Borders},
+    widgets::{block::Block, BorderType, Borders, Clear, Paragraph},
     Frame,
 };
 use std::io::Result;
 
 // game screen repr
 #[derive(Default)]
-// TODO: handle in-game pause menu as popup panel here
 pub struct GameScreen {
     game: Game,
+    is_paused: bool,
+    tick_count: u64,
 }
 
 impl GameScreen {
     pub fn new() -> Self {
         GameScreen {
             game: Game::default(),
+            is_paused: false,
+            tick_count: 0,
         }
     }
 
@@ -70,6 +73,7 @@ impl GameScreen {
 }
 
 impl Screen for GameScreen {
+    // render the game screen to the frame
     fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
@@ -148,11 +152,33 @@ impl Screen for GameScreen {
         };
         self.build_bottom_player_panel(user, frame, layout_bot[1])?;
 
+        // TODO: eventually remove
+        // Debug area
+        let debug_block = Block::default().title("Debug");
+        let debug_area = debug_block.inner(layout_bot[2]);
+        frame.render_widget(debug_block, layout_bot[2]);
+        frame.render_widget(
+            Paragraph::new("Tick Count: ".to_string() + self.tick_count.to_string().as_str()),
+            debug_area,
+        );
+
         // Input Row
         frame.render_widget(
             Block::new().borders(Borders::ALL).title("Input/Msg Block"),
             layout[3],
         );
+
+        if self.is_paused {
+            let block = Block::default()
+                .title("Pause Menu")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+            let menu_container = centered_rect(60, 20, frame.size());
+            let menu_area = block.inner(menu_container);
+            frame.render_widget(Clear, menu_container);
+            frame.render_widget(block, menu_container);
+            frame.render_widget(Paragraph::new("Options coming soon..."), menu_area);
+        }
         Ok(())
     }
 
@@ -163,8 +189,18 @@ impl Screen for GameScreen {
         if key_event.kind == KeyEventKind::Press {
             #[allow(clippy::match_single_binding)] // this will be populated in the future
             match key_event.code {
+                KeyCode::Char('p') | KeyCode::Char('P') => {
+                    self.is_paused = !self.is_paused;
+                }
                 _ => {}
             }
+        }
+        None
+    }
+
+    fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
+        if !self.is_paused {
+            self.tick_count += 1;
         }
         None
     }
@@ -177,4 +213,20 @@ fn build_card_lines(player: &Player) -> Text {
         lines.push(line);
     }
     Text::from(lines)
+}
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::vertical([
+        Constraint::Percentage((100 - percent_y) / 2),
+        Constraint::Percentage(percent_y),
+        Constraint::Percentage((100 - percent_y) / 2),
+    ])
+    .split(r);
+
+    Layout::horizontal([
+        Constraint::Percentage((100 - percent_x) / 2),
+        Constraint::Percentage(percent_x),
+        Constraint::Percentage((100 - percent_x) / 2),
+    ])
+    .split(popup_layout[1])[1]
 }

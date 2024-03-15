@@ -178,6 +178,7 @@ impl SetupScreen {
 }
 
 impl Screen for SetupScreen {
+    // render the setup screen to the frame
     fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
@@ -236,6 +237,10 @@ impl Screen for SetupScreen {
             validate_textarea(&mut self.user_name_textarea);
             validate_textarea(&mut self.team_name_textarea);
         }
+        None
+    }
+
+    fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
         None
     }
 }

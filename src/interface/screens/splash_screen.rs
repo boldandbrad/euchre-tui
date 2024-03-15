@@ -115,6 +115,7 @@ impl SplashScreen {
 }
 
 impl Screen for SplashScreen {
+    // render the splash screen to the frame
     fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
@@ -139,6 +140,7 @@ impl Screen for SplashScreen {
         self.build_menu_panel(frame, layout[3])?;
         Ok(())
     }
+
     fn handle_key_event(
         &mut self,
         key_event: crossterm::event::KeyEvent,
@@ -150,6 +152,10 @@ impl Screen for SplashScreen {
                 _ => {}
             }
         }
+        None
+    }
+
+    fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
         None
     }
 }
