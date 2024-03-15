@@ -4,8 +4,9 @@ pub mod team;
 use crate::engine::table::player::Player;
 use std::collections::HashMap;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum Seat {
+    #[default]
     Bottom,
     Left,
     Top,

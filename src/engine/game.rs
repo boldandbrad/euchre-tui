@@ -1,7 +1,7 @@
 use crate::engine::cards::{Card, Deck};
 use crate::engine::table::{
     player::{Player, PlayerType},
-    team::Team,
+    team::{Team, TeamType},
 };
 
 const NUM_CPUS: usize = 3;
@@ -21,9 +21,11 @@ pub enum GameState {
 pub struct Game {
     // TODO: find a better way to identify left/right, top/bottom players from teams
     pub state: GameState,
-    pub user_team: Team,
-    pub opposing_team: Team,
+    pub teams: [Team; 2],
     pub deck: Deck,
+    pub current_player_index: usize,
+    pub dealer_index: usize,
+    pub leader_index: usize,
 }
 
 impl Game {
@@ -49,18 +51,34 @@ impl Game {
 
         let user = Player::new(user_name, PlayerType::User, user_hand);
         let user_partner = Player::new(partner_name, PlayerType::Bot, cpu_hands.remove(0));
-        let user_team = Team::new(user_team_name, vec![user, user_partner]);
+        let user_team = Team::new(user_team_name, TeamType::Home, [user, user_partner]);
 
         let opponent_1 = Player::new(opp1_name, PlayerType::Bot, cpu_hands.remove(0));
         let opponent_2 = Player::new(opp2name, PlayerType::Bot, cpu_hands.remove(0));
-        let opposing_team = Team::new(opp_team_name, vec![opponent_1, opponent_2]);
+        let opposing_team = Team::new(opp_team_name, TeamType::Away, [opponent_1, opponent_2]);
 
         Game {
             state: GameState::default(),
-            user_team,
-            opposing_team,
+            teams: [user_team, opposing_team],
             deck,
+            current_player_index: 0,
+            dealer_index: 0,
+            leader_index: 0,
         }
+    }
+
+    pub fn current_player(&self) -> &Player {
+        &self.teams[self.current_player_index / 2 as usize].players
+            [self.current_player_index % 2 as usize]
+    }
+
+    pub fn next_player_index(&self) -> usize {
+        (self.current_player_index + 1) % 4
+        // should this be % 2?
+    }
+
+    pub fn next_turn(&mut self) {
+        self.current_player_index = self.next_player_index();
     }
 }
 

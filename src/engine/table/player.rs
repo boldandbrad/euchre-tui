@@ -1,13 +1,14 @@
 use crate::engine::cards::Card;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum PlayerType {
     User,
+    #[default]
     Bot,
     // Network,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Player {
     pub name: String,
     pub player_type: PlayerType,

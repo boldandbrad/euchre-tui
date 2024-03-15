@@ -34,13 +34,7 @@ impl GameScreen {
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
-        // Build card lines
-        let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand {
-            let line = Line::from(card.get_name());
-            lines.push(line);
-        }
-        frame.render_widget(Text::from(lines), area);
+        frame.render_widget(build_card_lines(&player), area);
         Ok(())
     }
 
@@ -50,13 +44,7 @@ impl GameScreen {
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
-        // Build card lines
-        let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand {
-            let line = Line::from(card.get_name());
-            lines.push(line);
-        }
-        frame.render_widget(Text::from(lines), area);
+        frame.render_widget(build_card_lines(&player), area);
         Ok(())
     }
 
@@ -66,13 +54,7 @@ impl GameScreen {
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
-        // Build card lines
-        let mut lines = vec![Line::from(player.name), Line::from("")];
-        for card in player.hand {
-            let line = Line::from(card.get_name());
-            lines.push(line);
-        }
-        frame.render_widget(Text::from(lines), area);
+        frame.render_widget(build_card_lines(&player), area);
         Ok(())
     }
 
@@ -82,13 +64,7 @@ impl GameScreen {
         frame: &mut Frame,
         area: Rect,
     ) -> Result<()> {
-        // Build card lines
-        let mut lines = vec![Line::from(user.name), Line::from("")];
-        for card in user.hand {
-            let line = Line::from(card.get_name());
-            lines.push(line);
-        }
-        frame.render_widget(Text::from(lines), area);
+        frame.render_widget(build_card_lines(&user), area);
         Ok(())
     }
 }
@@ -118,7 +94,7 @@ impl Screen for GameScreen {
         );
 
         // Top player area
-        let top_player = self.game.user_team.players.get(1);
+        let top_player = self.game.teams.first().unwrap().players.last();
         let partner = match top_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -137,7 +113,7 @@ impl Screen for GameScreen {
             .split(layout[1]);
 
         // Left player area
-        let left_player = self.game.opposing_team.players.first();
+        let left_player = self.game.teams.last().unwrap().players.first();
         let partner = match left_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -151,7 +127,7 @@ impl Screen for GameScreen {
         );
 
         // Right player area
-        let right_player = self.game.opposing_team.players.get(1);
+        let right_player = self.game.teams.last().unwrap().players.last();
         let partner = match right_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -165,7 +141,7 @@ impl Screen for GameScreen {
             .split(layout[2]);
 
         // Bottom player panel (user)
-        let bottom_player = self.game.user_team.players.first();
+        let bottom_player = self.game.teams.first().unwrap().players.first();
         let user = match bottom_player {
             Some(player) => player.clone(),
             _ => panic!("player not here"),
@@ -192,4 +168,13 @@ impl Screen for GameScreen {
         }
         None
     }
+}
+
+fn build_card_lines(player: &Player) -> Text {
+    let mut lines = vec![Line::from(player.name.clone()), Line::from("")];
+    for card in player.hand.clone() {
+        let line = Line::from(card.get_name());
+        lines.push(line);
+    }
+    Text::from(lines)
 }
