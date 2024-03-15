@@ -38,7 +38,6 @@ impl Tui {
 
     // draw the tui
     pub fn draw(&mut self, app: &mut App) -> Result<()> {
-        self.terminal.clear()?;
         self.terminal.draw(|frame| app.render(frame))?;
         Ok(())
     }
