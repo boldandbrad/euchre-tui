@@ -10,8 +10,8 @@ use std::{
 // application repr
 #[derive(Default)]
 pub struct App {
-    pub running: bool,
-    pub interface: Interface,
+    running: bool,
+    interface: Interface,
 }
 
 impl App {
@@ -38,24 +38,22 @@ impl App {
             tui.draw(self)?;
 
             // handle events
-            if let Event::Key(key_event) = crossterm::event::read()? {
-                match key_event.code {
-                    // exit app on `Esc` or `Ctrl-C`
-                    KeyCode::Esc => self.exit()?,
-                    KeyCode::Char('c') | KeyCode::Char('C')
-                        if key_event.modifiers == KeyModifiers::CONTROL =>
-                    {
-                        self.exit()?;
-                    }
-                    _ => {
-                        self.handle_key_event(key_event)?;
+            if crossterm::event::poll(Duration::from_millis(16))? {
+                if let Event::Key(key_event) = crossterm::event::read()? {
+                    match key_event.code {
+                        // exit app on `Esc` or `Ctrl-C`
+                        KeyCode::Esc => self.exit()?,
+                        KeyCode::Char('c') | KeyCode::Char('C')
+                            if key_event.modifiers == KeyModifiers::CONTROL =>
+                        {
+                            self.exit()?;
+                        }
+                        _ => {
+                            self.handle_key_event(key_event)?;
+                        }
                     }
                 }
             }
-
-            // TODO: is this necessary?
-            // wait for a short moment before the next iteration
-            std::thread::sleep(Duration::from_millis(16));
         }
 
         // exit tui
