@@ -2,7 +2,7 @@ use rand::seq::SliceRandom;
 
 // card color repr
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum Color {
+pub enum SuitColor {
     Red,
     Black,
 }
@@ -38,10 +38,10 @@ impl Suit {
         }
     }
 
-    pub fn get_color(self) -> Color {
+    pub fn get_color(self) -> SuitColor {
         match self {
-            Suit::Hearts | Suit::Diamonds => Color::Red,
-            _ => Color::Black,
+            Suit::Hearts | Suit::Diamonds => SuitColor::Red,
+            _ => SuitColor::Black,
         }
     }
 }
@@ -110,7 +110,7 @@ impl Card {
         face_symbol.to_string() + " of " + &suit_symbol.to_string()
     }
 
-    pub fn get_color(self) -> Color {
+    pub fn get_color(self) -> SuitColor {
         self.suit.get_color()
     }
 

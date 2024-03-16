@@ -1,12 +1,13 @@
 use crate::engine::game::Game;
 use crate::interface::{
-    components::inputs::InputStyle, interface_callback::InterfaceCallback, screens::Screen,
+    components::{ascii_text::SETUP_HEADER, inputs::InputStyle, layouts::MenuLayout},
+    interface_callback::InterfaceCallback,
+    screens::{paragraph_from_multiline_string, Screen},
 };
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use name_maker::RandomNameGenerator;
 use ratatui::style::Color;
 use ratatui::{
-    layout::{Constraint, Direction, Layout, Rect},
     style::{Modifier, Style},
     widgets::{block::Block, BorderType, Borders, Paragraph},
     Frame,
@@ -56,7 +57,7 @@ impl SetupScreen {
     pub fn new() -> Self {
         // initialize text areas
         let mut user_name_textarea = TextArea::default();
-        user_name_textarea.set_block(build_textarea_block("Your Name".to_string()));
+        user_name_textarea.set_block(build_textarea_block("User Name".to_string()));
         user_name_textarea.set_cursor_line_style(Style::default());
 
         let mut team_name_textarea = TextArea::default();
@@ -82,61 +83,6 @@ impl SetupScreen {
         }
     }
 
-    fn build_setup_form(&mut self, frame: &mut Frame, area: Rect) {
-        let layout_columns = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints([
-                Constraint::Fill(1),
-                Constraint::Length(42),
-                Constraint::Fill(1),
-            ])
-            .split(area);
-
-        let layout_form = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints([
-                Constraint::Length(3),
-                Constraint::Length(3),
-                Constraint::Length(3),
-            ])
-            .split(layout_columns[1]);
-
-        // text input areas
-        match self.state {
-            SetupScreenState::UserName => {
-                activate_textarea(&mut self.user_name_textarea);
-                deactivate_textarea(&mut self.team_name_textarea);
-            }
-            SetupScreenState::TeamName => {
-                deactivate_textarea(&mut self.user_name_textarea);
-                activate_textarea(&mut self.team_name_textarea);
-            }
-            SetupScreenState::Confirm => {
-                deactivate_textarea(&mut self.user_name_textarea);
-                deactivate_textarea(&mut self.team_name_textarea);
-            }
-        }
-        frame.render_widget(self.user_name_textarea.widget(), layout_form[0]);
-        frame.render_widget(self.team_name_textarea.widget(), layout_form[1]);
-
-        // submit message
-        if self.state == SetupScreenState::Confirm {
-            if validate_textarea(&mut self.user_name_textarea)
-                && validate_textarea(&mut self.team_name_textarea)
-            {
-                frame.render_widget(
-                    Paragraph::new("Ready to begin? (Enter)").centered(),
-                    layout_form[2],
-                );
-            } else {
-                frame.render_widget(
-                    Paragraph::new("Enter valid values to continue.").centered(),
-                    layout_form[2],
-                );
-            }
-        }
-    }
-
     fn init_game(&mut self) -> Game {
         Game::new(
             self.user_name_textarea.lines()[0].trim().to_string(),
@@ -152,23 +98,60 @@ impl SetupScreen {
 impl Screen for SetupScreen {
     // render the setup screen to the frame
     fn render(&mut self, frame: &mut Frame) -> Result<()> {
-        let layout = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints([
-                Constraint::Fill(1),
-                Constraint::Length(5),
-                Constraint::Length(3),
-                Constraint::Fill(3),
-            ])
-            .split(frame.size());
+        let menu_layout = MenuLayout::new(frame, 3);
 
-        // TODO: make screen header fancier
-        // TODO: add a description of the screen and how to use it
-        // app title
-        frame.render_widget(Paragraph::new("Game Setup").centered(), layout[1]);
+        // screen title
+        frame.render_widget(
+            paragraph_from_multiline_string(SETUP_HEADER).centered(),
+            menu_layout.header_area,
+        );
+
+        // screen sub title
+        // TODO: add a description of the screen and how to use it to the sub header
 
         // game setup form
-        self.build_setup_form(frame, layout[3]);
+        match self.state {
+            SetupScreenState::UserName => {
+                activate_textarea(&mut self.user_name_textarea);
+                deactivate_textarea(&mut self.team_name_textarea);
+            }
+            SetupScreenState::TeamName => {
+                deactivate_textarea(&mut self.user_name_textarea);
+                activate_textarea(&mut self.team_name_textarea);
+            }
+            SetupScreenState::Confirm => {
+                deactivate_textarea(&mut self.user_name_textarea);
+                deactivate_textarea(&mut self.team_name_textarea);
+            }
+        }
+
+        frame.render_widget(
+            self.user_name_textarea.widget(),
+            menu_layout.menu_option_areas[0],
+        );
+        frame.render_widget(
+            self.team_name_textarea.widget(),
+            menu_layout.menu_option_areas[1],
+        );
+
+        // submit message
+        // TODO: make this a button?
+        // TODO: add an option to go back to the slash screen
+        if self.state == SetupScreenState::Confirm {
+            if validate_textarea(&mut self.user_name_textarea)
+                && validate_textarea(&mut self.team_name_textarea)
+            {
+                frame.render_widget(
+                    Paragraph::new("Ready to begin? (Enter)").centered(),
+                    menu_layout.menu_option_areas[2],
+                );
+            } else {
+                frame.render_widget(
+                    Paragraph::new("Enter valid values to continue.").centered(),
+                    menu_layout.menu_option_areas[2],
+                );
+            }
+        }
         Ok(())
     }
 
@@ -196,12 +179,17 @@ impl Screen for SetupScreen {
                 },
                 _ => {
                     // text area inputs
-                    // TODO: handle special keys
+                    // TODO: only allow alphanumeric keys in text areas
                     match self.state {
                         SetupScreenState::UserName | SetupScreenState::TeamName => {
                             let active_textarea = self.get_active_textarea_mut();
                             if active_textarea.lines()[0].len() < MAX_NAME_LENGTH
                                 || key_event.code == KeyCode::Backspace
+                                || key_event.code == KeyCode::Left
+                                || key_event.code == KeyCode::Right
+                                || key_event.code == KeyCode::Delete
+                                || key_event.code == KeyCode::End
+                                || key_event.code == KeyCode::Home
                             {
                                 active_textarea.input(key_event);
                             }
