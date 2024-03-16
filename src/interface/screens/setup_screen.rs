@@ -211,18 +211,16 @@ impl Screen for SetupScreen {
 
 fn activate_textarea(textarea: &mut TextArea<'_>) {
     textarea.set_cursor_style(Style::default().add_modifier(Modifier::REVERSED));
-    match textarea.block() {
-        Some(block) => textarea.set_block(block.clone().border_style(Color::Blue)),
-        _ => {}
-    };
+    if let Some(block) = textarea.block() {
+        textarea.set_block(block.clone().border_style(Color::Blue))
+    }
 }
 
 fn deactivate_textarea(textarea: &mut TextArea<'_>) {
     textarea.set_cursor_style(Style::default());
-    match textarea.block() {
-        Some(block) => textarea.set_block(block.clone().border_style(Style::default())),
-        _ => {}
-    };
+    if let Some(block) = textarea.block() {
+        textarea.set_block(block.clone().border_style(Style::default()))
+    }
 }
 
 fn validate_textarea(textarea: &mut TextArea<'_>) -> bool {

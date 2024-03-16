@@ -84,7 +84,7 @@ impl Game {
 impl Default for Game {
     fn default() -> Self {
         Game::new(
-            "Brad".to_string(),
+            "User".to_string(),
             "Partner".to_string(),
             "Opponent 1".to_string(),
             "Opponent 2".to_string(),

@@ -156,7 +156,7 @@ impl Card {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Deck {
     pub cards: Vec<Card>,
 }
@@ -186,12 +186,6 @@ impl Deck {
 
     pub fn deal(&mut self, num_cards: usize) -> Vec<Card> {
         self.cards.drain(0..num_cards).collect()
-    }
-}
-
-impl Default for Deck {
-    fn default() -> Self {
-        Deck::new()
     }
 }
 
