@@ -1,22 +1,46 @@
 use crate::engine::{
-    card::{Card, Deck},
+    card::Deck,
     player::{Player, PlayerType},
     table::Seat,
     team::Team,
     PlayerMap,
 };
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
-const NUM_CPUS: usize = 3;
 // const WINNING_SCORE: u8 = 10;
 
 #[derive(Clone, Default)]
 pub enum GameState {
     #[default]
     PickingDealer,
+    DealingHand,
     CallingPickup,
     CallingHighSuit,
     PlayingHand,
+}
+
+impl GameState {
+    pub fn next(&self) -> Self {
+        match self {
+            GameState::PickingDealer => GameState::DealingHand,
+            GameState::DealingHand => GameState::CallingPickup,
+            GameState::CallingPickup => GameState::CallingHighSuit,
+            GameState::CallingHighSuit => GameState::PlayingHand,
+            GameState::PlayingHand => GameState::PickingDealer,
+        }
+    }
+}
+
+impl Display for GameState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            GameState::PickingDealer => write!(f, "Picking Dealer"),
+            GameState::DealingHand => write!(f, "Dealing Hand"),
+            GameState::CallingPickup => write!(f, "Calling Pickup"),
+            GameState::CallingHighSuit => write!(f, "Calling High Suit"),
+            GameState::PlayingHand => write!(f, "Playing Hand"),
+        }
+    }
 }
 
 // Define the game state
@@ -30,6 +54,7 @@ pub struct Game {
     pub current_player_seat: Seat,
     pub dealer_seat: Seat,
     pub leader_seat: Seat,
+    pub hand_num: u8,
 }
 
 impl Game {
@@ -38,54 +63,48 @@ impl Game {
         user_name: String,
         partner_name: String,
         opp1_name: String,
-        opp2name: String,
+        opp2_name: String,
         user_team_name: String,
         opp_team_name: String,
     ) -> Self {
-        // Create and shuffle a deck of cards
-        let mut deck = Deck::new();
+        // create and shuffle the deck
+        let deck = Deck::new();
 
-        // Deal hands to player and CPU players
-        // TODO: deal cards to players after game creation and choosing dealer
-        let user_hand = deck.deal(5);
-
-        let mut cpu_hands: Vec<Vec<Card>> = Vec::new();
-        for _ in 0..NUM_CPUS {
-            cpu_hands.push(deck.deal(5));
-        }
-
-        let user = Player::new(user_name, PlayerType::User, user_hand);
-        let user_partner = Player::new(partner_name, PlayerType::Bot, cpu_hands.remove(0));
+        // create teams
         let user_team = Team::new(user_team_name, HashSet::from([Seat::Bottom, Seat::Top]));
-
-        let opponent_1 = Player::new(opp1_name, PlayerType::Bot, cpu_hands.remove(0));
-        let opponent_2 = Player::new(opp2name, PlayerType::Bot, cpu_hands.remove(0));
         let opp_team = Team::new(opp_team_name, HashSet::from([Seat::Left, Seat::Right]));
+
+        // create player/seat map
+        let players = PlayerMap::from([
+            (Seat::Bottom, Player::new(user_name, PlayerType::User)),
+            (Seat::Top, Player::new(partner_name, PlayerType::Bot)),
+            (Seat::Left, Player::new(opp1_name, PlayerType::Bot)),
+            (Seat::Right, Player::new(opp2_name, PlayerType::Bot)),
+        ]);
 
         Game {
             state: GameState::default(),
             user_team,
             opp_team,
-            players: PlayerMap::from([
-                (Seat::Bottom, user),
-                (Seat::Top, user_partner),
-                (Seat::Left, opponent_1),
-                (Seat::Right, opponent_2),
-            ]),
+            players,
             deck,
-            current_player_seat: Seat::Bottom,
-            dealer_seat: Seat::Bottom,
-            leader_seat: Seat::Bottom,
+            ..Default::default()
         }
     }
 
-    pub fn get_current_player(&self) -> &Player {
+    pub fn current_player(&self) -> &Player {
         self.players
             .get(&self.current_player_seat)
             .expect("player not found")
     }
 
-    pub fn get_player_by_seat(&self, seat: Seat) -> &Player {
+    pub fn current_player_mut(&mut self) -> &mut Player {
+        self.players
+            .get_mut(&self.current_player_seat)
+            .expect("player not found")
+    }
+
+    pub fn get_player_in_seat(&self, seat: Seat) -> &Player {
         self.players.get(&seat).expect("player not found")
     }
 

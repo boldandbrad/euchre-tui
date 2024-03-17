@@ -1,3 +1,7 @@
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 use std::fmt::Display;
 
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -15,6 +19,18 @@ impl Seat {
             Seat::Left => Seat::Top,
             Seat::Top => Seat::Right,
             Seat::Right => Seat::Bottom,
+        }
+    }
+}
+
+impl Distribution<Seat> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Seat {
+        match rng.gen_range(0..4) {
+            0 => Seat::Bottom,
+            1 => Seat::Left,
+            2 => Seat::Top,
+            3 => Seat::Right,
+            _ => Seat::Bottom,
         }
     }
 }

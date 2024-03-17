@@ -17,11 +17,11 @@ pub struct Player {
 
 impl Player {
     // create a new player
-    pub fn new(name: String, player_type: PlayerType, hand: Vec<Card>) -> Self {
+    pub fn new(name: String, player_type: PlayerType) -> Self {
         Player {
             name,
             player_type,
-            hand,
+            ..Default::default()
         }
     }
 
