@@ -1,5 +1,4 @@
-use crate::engine::game::Game;
-use crate::engine::table::player::Player;
+use crate::engine::{game::Game, player::Player, table::Seat};
 use crate::interface::{
     components::{layouts::GameLayout, popups::centered_popup_area},
     interface_callback::InterfaceCallback,
@@ -49,10 +48,7 @@ impl Screen for GameScreen {
         );
 
         // top player area
-        let partner = match self.game.teams.first().unwrap().players.last() {
-            Some(player) => player.clone(),
-            _ => panic!("player not here"),
-        };
+        let partner: &Player = self.game.get_player_by_seat(Seat::Top);
         frame.render_widget(build_card_lines(&partner), game_layout.top_player_area);
 
         // right score board
@@ -62,10 +58,7 @@ impl Screen for GameScreen {
         );
 
         // left player area
-        let left_player = match self.game.teams.last().unwrap().players.first() {
-            Some(player) => player.clone(),
-            _ => panic!("player not here"),
-        };
+        let left_player: &Player = self.game.get_player_by_seat(Seat::Left);
         frame.render_widget(build_card_lines(&left_player), game_layout.left_player_area);
 
         // table area
@@ -75,20 +68,14 @@ impl Screen for GameScreen {
         );
 
         // right player area
-        let right_player = match self.game.teams.last().unwrap().players.last() {
-            Some(player) => player.clone(),
-            _ => panic!("player not here"),
-        };
+        let right_player: &Player = self.game.get_player_by_seat(Seat::Right);
         frame.render_widget(
             build_card_lines(&right_player),
             game_layout.right_player_area,
         );
 
         // bottom player panel (user)
-        let user = match self.game.teams.first().unwrap().players.first() {
-            Some(player) => player.clone(),
-            _ => panic!("player not here"),
-        };
+        let user: &Player = self.game.get_player_by_seat(Seat::Bottom);
         frame.render_widget(build_card_lines(&user), game_layout.bottom_player_area);
 
         // TODO: eventually remove debug area or hide behind cli flag
@@ -100,11 +87,12 @@ impl Screen for GameScreen {
             Text::from(vec![
                 Line::from("Tick Count: ".to_string() + self.tick_count.to_string().as_str()),
                 Line::from(
-                    "Current Player Index: ".to_string()
-                        + self.game.current_player_index.to_string().as_str(),
+                    "Current Player Seat: ".to_string()
+                        + self.game.current_player_seat.to_string().as_str(),
                 ),
                 Line::from(
-                    "Current Player Name: ".to_string() + self.game.current_player().name.as_str(),
+                    "Current Player Name: ".to_string()
+                        + self.game.get_current_player().name.as_str(),
                 ),
             ]),
             debug_area,

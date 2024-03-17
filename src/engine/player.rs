@@ -1,4 +1,4 @@
-use crate::engine::cards::Card;
+use crate::engine::card::Card;
 
 #[derive(Clone, Default)]
 pub enum PlayerType {

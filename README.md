@@ -6,6 +6,8 @@ the US Midwest, and some other places.
 **euchre-tui** allows you to play euchre in your terminal with a beautifully
 designed text-based interface.
 
+<!-- TODO: add gif -->
+
 > [!WARNING]<br>
 > **euchre-tui** is currently in **ALPHA**. This means it is highly unstable and
 > is missing key features. Please track the progress of features throughout this
@@ -16,6 +18,8 @@ designed text-based interface.
 > | ✳️        | Implemented - unstable    |
 > | 🚧        | Work in Progress          |
 > | ❌        | Not Started               |
+
+<!-- TODO: add install instructions -->
 
 ## ⚖️ Legal <a id="legal"></a>
 

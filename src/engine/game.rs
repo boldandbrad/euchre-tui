@@ -1,8 +1,11 @@
-use crate::engine::cards::{Card, Deck};
-use crate::engine::table::{
+use crate::engine::{
+    card::{Card, Deck},
     player::{Player, PlayerType},
-    team::{Team, TeamType},
+    table::Seat,
+    team::Team,
+    PlayerMap,
 };
+use std::collections::HashSet;
 
 const NUM_CPUS: usize = 3;
 // const WINNING_SCORE: u8 = 10;
@@ -19,13 +22,14 @@ pub enum GameState {
 // Define the game state
 #[derive(Clone)]
 pub struct Game {
-    // TODO: find a better way to identify left/right, top/bottom players from teams
     pub state: GameState,
-    pub teams: [Team; 2],
+    pub user_team: Team,
+    pub opp_team: Team,
+    pub players: PlayerMap,
     pub deck: Deck,
-    pub current_player_index: usize,
-    pub dealer_index: usize,
-    pub leader_index: usize,
+    pub current_player_seat: Seat,
+    pub dealer_seat: Seat,
+    pub leader_seat: Seat,
 }
 
 impl Game {
@@ -42,6 +46,7 @@ impl Game {
         let mut deck = Deck::new();
 
         // Deal hands to player and CPU players
+        // TODO: deal cards to players after game creation and choosing dealer
         let user_hand = deck.deal(5);
 
         let mut cpu_hands: Vec<Vec<Card>> = Vec::new();
@@ -51,33 +56,41 @@ impl Game {
 
         let user = Player::new(user_name, PlayerType::User, user_hand);
         let user_partner = Player::new(partner_name, PlayerType::Bot, cpu_hands.remove(0));
-        let user_team = Team::new(user_team_name, TeamType::Home, [user, user_partner]);
+        let user_team = Team::new(user_team_name, HashSet::from([Seat::Bottom, Seat::Top]));
 
         let opponent_1 = Player::new(opp1_name, PlayerType::Bot, cpu_hands.remove(0));
         let opponent_2 = Player::new(opp2name, PlayerType::Bot, cpu_hands.remove(0));
-        let opposing_team = Team::new(opp_team_name, TeamType::Away, [opponent_1, opponent_2]);
+        let opp_team = Team::new(opp_team_name, HashSet::from([Seat::Left, Seat::Right]));
 
         Game {
             state: GameState::default(),
-            teams: [user_team, opposing_team],
+            user_team,
+            opp_team,
+            players: PlayerMap::from([
+                (Seat::Bottom, user),
+                (Seat::Top, user_partner),
+                (Seat::Left, opponent_1),
+                (Seat::Right, opponent_2),
+            ]),
             deck,
-            current_player_index: 0,
-            dealer_index: 0,
-            leader_index: 0,
+            current_player_seat: Seat::Bottom,
+            dealer_seat: Seat::Bottom,
+            leader_seat: Seat::Bottom,
         }
     }
 
-    pub fn current_player(&self) -> &Player {
-        &self.teams[self.current_player_index / 2 as usize].players
-            [self.current_player_index % 2 as usize]
+    pub fn get_current_player(&self) -> &Player {
+        self.players
+            .get(&self.current_player_seat)
+            .expect("player not found")
     }
 
-    pub fn next_player_index(&self) -> usize {
-        (self.current_player_index + 1) % 4
+    pub fn get_player_by_seat(&self, seat: Seat) -> &Player {
+        self.players.get(&seat).expect("player not found")
     }
 
     pub fn next_turn(&mut self) {
-        self.current_player_index = self.next_player_index();
+        self.current_player_seat = self.current_player_seat.next();
     }
 }
 

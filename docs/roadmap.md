@@ -6,11 +6,12 @@ often.
 
 ## Next Priorities
 
-- Get the CLI entrypoint setup
-- Implement splash screen/menu
+- Get the CLI entrypoint setup ✅
+- Implement splash screen/menu ✅
+- Implement game setup screen ✅
+- Implement main game screen 🚧
 - Implement First Black Jack is first dealer
 - Implement main game loop
-- Implement main game tui
 - Implement game over/victory screens
 - Implement help screen
 - Ability to play a game of euchre with cpus
