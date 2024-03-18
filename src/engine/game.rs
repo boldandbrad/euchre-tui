@@ -5,7 +5,10 @@ use crate::engine::{
     team::Team,
     PlayerMap,
 };
-use std::{collections::HashSet, fmt::Display};
+use std::{
+    collections::HashSet,
+    fmt::{Display, Formatter},
+};
 
 // const WINNING_SCORE: u8 = 10;
 
@@ -32,7 +35,7 @@ impl GameState {
 }
 
 impl Display for GameState {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         match self {
             GameState::PickingDealer => write!(f, "Picking Dealer"),
             GameState::DealingHand => write!(f, "Dealing Hand"),
@@ -81,12 +84,17 @@ impl Game {
             (Seat::Right, Player::new(opp2_name, PlayerType::Bot)),
         ]);
 
+        // using ..Default::default() here will not work. Causes stack overflow. Idk why
         Game {
+            state: GameState::default(),
             user_team,
             opp_team,
             players,
             deck,
-            ..Default::default()
+            current_player_seat: Seat::default(),
+            dealer_seat: Seat::default(),
+            leader_seat: Seat::default(),
+            hand_num: 0,
         }
     }
 
