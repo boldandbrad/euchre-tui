@@ -40,14 +40,13 @@ pub fn bottom_player_cards(cards: Vec<Card>) -> Paragraph<'static> {
     }
 
     let mut hand_area = vec!["".to_string(); CARD_HEIGHT];
-    for (_idx, card_area) in card_areas.iter().enumerate() {
+    for card_area in card_areas.iter() {
         for (idx, line) in card_area.iter().enumerate() {
             hand_area[idx].push_str(VERTICAL_CARD_LEFT_EDGE[idx]);
-            hand_area[idx].push_str(&line);
+            hand_area[idx].push_str(line);
             hand_area[idx].push_str(VERTICAL_CARD_RIGHT_EDGE[idx]);
         }
     }
-
     string_vec_to_paragraph(hand_area)
 }
 

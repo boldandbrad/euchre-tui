@@ -188,9 +188,9 @@ impl Screen for GameScreen {
     }
 }
 
-fn build_card_lines(hand: &Vec<Card>) -> Text {
+fn build_card_lines(hand: &[Card]) -> Text {
     let mut lines = vec![];
-    for card in hand.clone() {
+    for card in hand.iter().copied() {
         let line = Line::from(card.get_name());
         lines.push(line);
     }
