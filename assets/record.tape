@@ -25,7 +25,7 @@ Type "n" Sleep 2s
 Type "boldandbrad" Sleep 1s Enter Sleep 1s
 
 # type into second input box and wait
-Type "Good guys" Sleep 1s Enter Sleep 1s
+Type "Good Guys" Sleep 1s Enter Sleep 1s
 
 Screenshot assets/setup.png
 
