@@ -8,7 +8,6 @@ use std::{
 };
 
 // application repr
-#[derive(Default)]
 pub struct App {
     is_running: bool,
     interface: Interface,

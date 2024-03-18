@@ -9,7 +9,7 @@ use std::{collections::HashSet, fmt::Display};
 
 // const WINNING_SCORE: u8 = 10;
 
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub enum GameState {
     #[default]
     PickingDealer,
@@ -32,7 +32,7 @@ impl GameState {
 }
 
 impl Display for GameState {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             GameState::PickingDealer => write!(f, "Picking Dealer"),
             GameState::DealingHand => write!(f, "Dealing Hand"),
@@ -44,7 +44,6 @@ impl Display for GameState {
 }
 
 // Define the game state
-#[derive(Clone)]
 pub struct Game {
     pub state: GameState,
     pub user_team: Team,
@@ -83,7 +82,6 @@ impl Game {
         ]);
 
         Game {
-            state: GameState::default(),
             user_team,
             opp_team,
             players,

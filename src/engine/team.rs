@@ -1,7 +1,7 @@
 use crate::engine::Seat;
 use std::collections::HashSet;
 
-#[derive(Default, Clone)]
+#[derive(Default)]
 pub struct Team {
     pub name: String,
     pub seats: HashSet<Seat>,
