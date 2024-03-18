@@ -1,20 +1,13 @@
-*This is a reimplementation and reimagination of my other project [euchre-cli](https://https://github.com/boldandbrad/meeple-cli).*
+> [!WARNING]<br>
+> **euchre-tui** is currently in **ALPHA**. This means it is highly unstable and
+> is missing key features.
 
 # euchre-tui
 
 [![Crates.io](https://img.shields.io/crates/v/euchre-tui)](https://crates.io/crates/euchre-tui)
 
-**euchre-tui** allows you to play euchre in your terminal with a beautifully
+Play euchre in your terminal with a beautifully
 designed text-based interface.
-
-...but what the heck is even euchre?
-
-Euchre is a team-based trick-taking card game for 4 players that is popular in
-the US Midwest, and some other places.
-
-> [!WARNING]<br>
-> **euchre-tui** is currently in **ALPHA**. This means it is highly unstable and
-> is missing key features.
 
 **Jump to:**
 [Demo](#demo) |
@@ -22,7 +15,8 @@ the US Midwest, and some other places.
 [Installation](#install) |
 [Getting Started](#getting-started) |
 [Configuration](#config) |
-[Legal](#legal) |
+[FAQ](#faq) |
+[Legal](#legal)
 <!-- [Documentation](https://boldandbrad.github.io/euchre-tui/) 🔗 -->
 
 ## 📼 Demo <a id="demo"></a>
@@ -51,13 +45,22 @@ cargo install euchre-tui
 
 ## 🚀 Getting started <a id="getting-started"></a>
 
-<!-- TODO: add usage instructions -->
-> Coming soon.
+<!-- TODO: add more usage instructions -->
+```bash
+euchre
+```
 
 ## ⚙️ Configuration <a id="config"></a>
 
 <!-- TODO: add configuration guide -->
 > Coming soon.
+
+## ❓ FAQ <a id="faq"></a>
+
+### ...but what the heck is even euchre?
+
+Euchre is a team-based trick-taking card game for 4 players that is popular in
+the US Midwest, and some other places.
 
 ## ⚖️ Legal <a id="legal"></a>
 
