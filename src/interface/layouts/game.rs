@@ -22,9 +22,38 @@ impl PlayerLayout {
     }
 }
 
+// TODO: implement ScoreBoardLayout
+pub struct ScoreBoardLayout {
+    pub team_name_area: Rect,
+    pub game_score_area: Rect,
+    pub hand_score_area: Rect,
+}
+
+impl ScoreBoardLayout {
+    pub fn new(rect: Rect) -> Self {
+        let layout_base = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(1),
+                Constraint::Length(1),
+                Constraint::Length(1),
+                Constraint::Length(1),
+                Constraint::Fill(1),
+            ])
+            .split(rect);
+        Self {
+            team_name_area: layout_base[1],
+            game_score_area: layout_base[2],
+            hand_score_area: layout_base[3],
+        }
+    }
+}
+
+// TODO: implement GameTableLayout
+
 pub struct GameLayout {
-    pub left_score_area: Rect,
-    pub right_score_area: Rect,
+    pub left_score_area: ScoreBoardLayout,
+    pub right_score_area: ScoreBoardLayout,
     pub top_player_area: PlayerLayout,
     pub left_player_area: PlayerLayout,
     pub right_player_area: PlayerLayout,
@@ -58,8 +87,8 @@ impl GameLayout {
             .constraints(Constraint::from_fills([1, 2, 1]))
             .split(layout_base[2]);
         Self {
-            left_score_area: layout_top[0],
-            right_score_area: layout_top[2],
+            left_score_area: ScoreBoardLayout::new(layout_top[0]),
+            right_score_area: ScoreBoardLayout::new(layout_top[2]),
             top_player_area: PlayerLayout::new(layout_top[1]),
             left_player_area: PlayerLayout::new(layout_mid[0]),
             right_player_area: PlayerLayout::new(layout_mid[2]),
@@ -78,7 +107,11 @@ impl GameLayout {
             Seat::Right => &self.right_player_area,
         }
     }
-}
 
-// TODO: implement GameTableLayout
-// TODO: implement ScoreBoardLayout
+    pub fn get_score_area_by_seat(&self, seat: Seat) -> &ScoreBoardLayout {
+        match seat {
+            Seat::Bottom | Seat::Top => &self.left_score_area,
+            Seat::Left | Seat::Right => &self.right_score_area,
+        }
+    }
+}

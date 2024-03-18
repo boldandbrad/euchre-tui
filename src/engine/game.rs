@@ -49,6 +49,7 @@ impl Display for GameState {
 // Define the game state
 pub struct Game {
     pub state: GameState,
+    // TODO: should teams be in an array or set to make for easy iteration?
     pub user_team: Team,
     pub opp_team: Team,
     pub players: PlayerMap,

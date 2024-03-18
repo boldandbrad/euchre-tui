@@ -13,6 +13,7 @@ use crate::{
 };
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
+    layout::Alignment,
     text::{Line, Text},
     widgets::{block::Block, BorderType, Borders, Clear, Paragraph},
     Frame,
@@ -46,16 +47,31 @@ impl Screen for GameScreen {
     fn render(&mut self, frame: &mut Frame) -> Result<()> {
         let game_layout = GameLayout::new(frame);
         // TODO: make reusable components for score boards and player areas
-        // TODO: implement score boards
 
         // render score boards
         frame.render_widget(
-            Block::new().borders(Borders::ALL).title("Left Score"),
-            game_layout.left_score_area,
+            Paragraph::new(self.game.user_team.name.clone()).alignment(Alignment::Center),
+            game_layout.left_score_area.team_name_area,
         );
         frame.render_widget(
-            Block::new().borders(Borders::ALL).title("Right Score"),
-            game_layout.right_score_area,
+            Paragraph::new(self.game.user_team.game_score.to_string()).alignment(Alignment::Center),
+            game_layout.left_score_area.game_score_area,
+        );
+        frame.render_widget(
+            Paragraph::new(self.game.user_team.hand_score.to_string()).alignment(Alignment::Center),
+            game_layout.left_score_area.hand_score_area,
+        );
+        frame.render_widget(
+            Paragraph::new(self.game.opp_team.name.clone()).alignment(Alignment::Center),
+            game_layout.right_score_area.team_name_area,
+        );
+        frame.render_widget(
+            Paragraph::new(self.game.opp_team.game_score.to_string()).alignment(Alignment::Center),
+            game_layout.right_score_area.game_score_area,
+        );
+        frame.render_widget(
+            Paragraph::new(self.game.user_team.hand_score.to_string()).alignment(Alignment::Center),
+            game_layout.right_score_area.hand_score_area,
         );
 
         // render player areas
