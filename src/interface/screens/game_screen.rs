@@ -1,12 +1,16 @@
-use crate::engine::{
-    game::{Game, GameState},
-    player::Player,
-    table::Seat,
-};
 use crate::interface::{
     components::{layouts::GameLayout, popups::centered_popup_area},
     interface_callback::InterfaceCallback,
     screens::Screen,
+};
+use crate::{
+    engine::{
+        card::Card,
+        game::{Game, GameState},
+        player::Player,
+        table::{Seat, SEAT_VARIANTS},
+    },
+    interface::components::cards::bottom_player_cards,
 };
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -45,45 +49,43 @@ impl Screen for GameScreen {
         // TODO: make reusable components for score boards and player areas
         // TODO: implement score boards
 
-        // left score board
+        // render score boards
         frame.render_widget(
             Block::new().borders(Borders::ALL).title("Left Score"),
             game_layout.left_score_area,
         );
-
-        // top player area
-        let partner: &Player = self.game.get_player_in_seat(Seat::Top);
-        frame.render_widget(build_card_lines(partner), game_layout.top_player_area);
-
-        // right score board
         frame.render_widget(
             Block::new().borders(Borders::ALL).title("Right Score"),
             game_layout.right_score_area,
         );
 
-        // left player area
-        let left_player: &Player = self.game.get_player_in_seat(Seat::Left);
-        frame.render_widget(build_card_lines(left_player), game_layout.left_player_area);
+        // render player areas
+        for seat in SEAT_VARIANTS {
+            let player: &Player = self.game.get_player_in_seat(seat.clone());
+            let player_area = game_layout.get_player_area_by_seat(seat.clone());
+            frame.render_widget(Paragraph::new(player.name.as_str()), player_area.name_area);
+            // TODO: once all the card rendering logic is sorted out, this will be fully dynamic
+            match seat {
+                Seat::Bottom => {
+                    frame.render_widget(
+                        bottom_player_cards(player.hand.clone()),
+                        game_layout.bottom_player_area.hand_area,
+                    );
+                }
+                _ => {
+                    frame.render_widget(build_card_lines(&player.hand), player_area.hand_area);
+                }
+            }
+        }
 
-        // table area
+        // render table area
         frame.render_widget(
             Block::new().borders(Borders::ALL).title("Table"),
             game_layout.table_area,
         );
 
-        // right player area
-        let right_player: &Player = self.game.get_player_in_seat(Seat::Right);
-        frame.render_widget(
-            build_card_lines(right_player),
-            game_layout.right_player_area,
-        );
-
-        // bottom player panel (user)
-        let user: &Player = self.game.get_player_in_seat(Seat::Bottom);
-        frame.render_widget(build_card_lines(user), game_layout.bottom_player_area);
-
         // TODO: eventually remove debug area or hide behind cli flag
-        // debug area
+        // render debug area
         let debug_block = Block::default().title("Debug");
         let debug_area = debug_block.inner(game_layout.debug_area);
         frame.render_widget(debug_block, game_layout.debug_area);
@@ -186,9 +188,9 @@ impl Screen for GameScreen {
     }
 }
 
-fn build_card_lines(player: &Player) -> Text {
-    let mut lines = vec![Line::from(player.name.clone()), Line::from("")];
-    for card in player.hand.clone() {
+fn build_card_lines(hand: &Vec<Card>) -> Text {
+    let mut lines = vec![];
+    for card in hand.clone() {
         let line = Line::from(card.get_name());
         lines.push(line);
     }

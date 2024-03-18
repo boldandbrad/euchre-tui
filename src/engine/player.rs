@@ -21,7 +21,7 @@ impl Player {
         Player {
             name,
             player_type,
-            ..Default::default()
+            hand: vec![],
         }
     }
 

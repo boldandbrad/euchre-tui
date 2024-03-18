@@ -14,7 +14,8 @@ impl Team {
         Team {
             name,
             seats,
-            ..Default::default()
+            game_score: 0,
+            hand_score: 0,
         }
     }
 }

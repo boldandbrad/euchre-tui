@@ -4,6 +4,8 @@ use rand::{
 };
 use std::fmt::{Display, Formatter};
 
+pub static SEAT_VARIANTS: &[Seat] = &[Seat::Bottom, Seat::Left, Seat::Top, Seat::Right];
+
 #[derive(Default, Clone, PartialEq, Eq, Hash)]
 pub enum Seat {
     #[default]
