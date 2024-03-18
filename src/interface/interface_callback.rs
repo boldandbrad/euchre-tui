@@ -6,5 +6,5 @@ pub enum InterfaceCallback {
     Exit,
     QuitToSplash,
     SetupNewGame,
-    StartGame { game: Game },
+    StartGame { game: Box<Game> },
 }

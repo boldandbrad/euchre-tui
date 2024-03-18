@@ -8,7 +8,7 @@ pub enum SuitColor {
 }
 
 // card suit repr
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -93,7 +93,7 @@ impl Face {
 }
 
 // card repr
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Card {
     pub face: Face,
     pub suit: Suit,

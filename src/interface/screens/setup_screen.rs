@@ -171,7 +171,7 @@ impl Screen for SetupScreen {
                             && validate_textarea(&mut self.team_name_textarea)
                         {
                             return Some(InterfaceCallback::StartGame {
-                                game: self.init_game(),
+                                game: Box::new(self.init_game()),
                             });
                         }
                     }

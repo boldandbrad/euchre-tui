@@ -1,4 +1,8 @@
-use crate::engine::{game::Game, player::Player, table::Seat};
+use crate::engine::{
+    game::{Game, GameState},
+    player::Player,
+    table::Seat,
+};
 use crate::interface::{
     components::{layouts::GameLayout, popups::centered_popup_area},
     interface_callback::InterfaceCallback,
@@ -48,8 +52,8 @@ impl Screen for GameScreen {
         );
 
         // top player area
-        let partner: &Player = self.game.get_player_by_seat(Seat::Top);
-        frame.render_widget(build_card_lines(&partner), game_layout.top_player_area);
+        let partner: &Player = self.game.get_player_in_seat(Seat::Top);
+        frame.render_widget(build_card_lines(partner), game_layout.top_player_area);
 
         // right score board
         frame.render_widget(
@@ -58,8 +62,8 @@ impl Screen for GameScreen {
         );
 
         // left player area
-        let left_player: &Player = self.game.get_player_by_seat(Seat::Left);
-        frame.render_widget(build_card_lines(&left_player), game_layout.left_player_area);
+        let left_player: &Player = self.game.get_player_in_seat(Seat::Left);
+        frame.render_widget(build_card_lines(left_player), game_layout.left_player_area);
 
         // table area
         frame.render_widget(
@@ -68,15 +72,15 @@ impl Screen for GameScreen {
         );
 
         // right player area
-        let right_player: &Player = self.game.get_player_by_seat(Seat::Right);
+        let right_player: &Player = self.game.get_player_in_seat(Seat::Right);
         frame.render_widget(
-            build_card_lines(&right_player),
+            build_card_lines(right_player),
             game_layout.right_player_area,
         );
 
         // bottom player panel (user)
-        let user: &Player = self.game.get_player_by_seat(Seat::Bottom);
-        frame.render_widget(build_card_lines(&user), game_layout.bottom_player_area);
+        let user: &Player = self.game.get_player_in_seat(Seat::Bottom);
+        frame.render_widget(build_card_lines(user), game_layout.bottom_player_area);
 
         // TODO: eventually remove debug area or hide behind cli flag
         // debug area
@@ -86,13 +90,16 @@ impl Screen for GameScreen {
         frame.render_widget(
             Text::from(vec![
                 Line::from("Tick Count: ".to_string() + self.tick_count.to_string().as_str()),
+                Line::from("Game State: ".to_string() + self.game.state.to_string().as_str()),
                 Line::from(
                     "Current Player Seat: ".to_string()
                         + self.game.current_player_seat.to_string().as_str(),
                 ),
                 Line::from(
-                    "Current Player Name: ".to_string()
-                        + self.game.get_current_player().name.as_str(),
+                    "Current Player Name: ".to_string() + self.game.current_player().name.as_str(),
+                ),
+                Line::from(
+                    "Dealer Seat: ".to_string() + self.game.dealer_seat.to_string().as_str(),
                 ),
             ]),
             debug_area,
@@ -135,12 +142,43 @@ impl Screen for GameScreen {
     fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
         match self.is_paused {
             false => {
-                if self.tick_count >= 20 {
-                    self.game.next_turn();
-                    self.tick_count = 0
-                } else {
-                    self.tick_count += 1
+                match self.game.state {
+                    GameState::PickingDealer => {
+                        if self.game.hand_num == 0 {
+                            // TODO: implement picking first dealer by first black jack, then recreating the deck
+                            self.game.dealer_seat = rand::random();
+                        } else {
+                            self.game.dealer_seat = self.game.dealer_seat.next();
+                        }
+                        self.game.current_player_seat = self.game.dealer_seat.next();
+                        self.game.state = GameState::DealingHand;
+                    }
+                    GameState::DealingHand => {
+                        // TODO: deal the "appropriate" way (2, 3, 2, 3, 3, 2, 3, 2)
+                        if self.tick_count >= 5 {
+                            if self.game.current_player().hand.is_empty() {
+                                self.game.current_player_mut().hand = self.game.deck.deal(5);
+                                self.game.next_turn();
+                            } else {
+                                // TODO: display face up card and deck on the table
+                                self.game.current_player_seat = self.game.dealer_seat.next();
+                                self.game.state = GameState::CallingPickup;
+                            }
+                            self.tick_count = 0
+                        } else {
+                            self.tick_count += 1
+                        }
+                    }
+                    GameState::CallingPickup => {}
+                    GameState::CallingHighSuit => {}
+                    GameState::PlayingHand => {}
                 }
+                // if self.tick_count >= 20 {
+                //     self.game.next_turn();
+                //     self.tick_count = 0
+                // } else {
+                //     self.tick_count += 1
+                // }
             }
             true => {}
         }

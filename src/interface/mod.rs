@@ -63,7 +63,7 @@ impl Interface {
         match callback {
             Some(InterfaceCallback::StartGame { game }) => {
                 self.set_state(InterfaceState::GameTable);
-                self.game_screen.set_game(game);
+                self.game_screen.set_game(*game);
             }
             Some(InterfaceCallback::SetupNewGame) => self.set_state(InterfaceState::GameSetup),
             Some(InterfaceCallback::QuitToSplash) => self.set_state(InterfaceState::Splash),

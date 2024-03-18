@@ -1,7 +1,12 @@
-use std::fmt::Display;
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
+use std::fmt::{Display, Formatter};
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Clone, PartialEq, Eq, Hash)]
 pub enum Seat {
+    #[default]
     Bottom,
     Left,
     Top,
@@ -19,8 +24,20 @@ impl Seat {
     }
 }
 
+impl Distribution<Seat> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Seat {
+        match rng.gen_range(0..4) {
+            0 => Seat::Bottom,
+            1 => Seat::Left,
+            2 => Seat::Top,
+            3 => Seat::Right,
+            _ => Seat::Bottom,
+        }
+    }
+}
+
 impl Display for Seat {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         match self {
             Seat::Bottom => write!(f, "Bottom"),
             Seat::Left => write!(f, "Left"),
