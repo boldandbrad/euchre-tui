@@ -1,5 +1,7 @@
 # euchre-tui
 
+[![Crates.io](https://img.shields.io/crates/v/euchre-tui)](https://crates.io/crates/euchre-tui)
+
 Euchre is a team-based trick-taking card game for 4 players that is popular in
 the US Midwest, and some other places.
 
@@ -20,6 +22,12 @@ designed text-based interface.
 > | ❌        | Not Started               |
 
 <!-- TODO: add install instructions -->
+
+## 📦 Install <a id="install"></a>
+
+```bash
+cargo install euchre-tui
+```
 
 ## ⚖️ Legal <a id="legal"></a>
 
