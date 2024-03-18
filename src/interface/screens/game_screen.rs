@@ -1,7 +1,6 @@
 use crate::interface::{
-    components::{layouts::GameLayout, popups::centered_popup_area},
-    interface_callback::InterfaceCallback,
-    screens::Screen,
+    components::popups::centered_popup_area, interface_callback::InterfaceCallback,
+    layouts::game::GameLayout, screens::Screen,
 };
 use crate::{
     engine::{

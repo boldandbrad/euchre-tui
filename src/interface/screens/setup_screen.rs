@@ -1,7 +1,8 @@
 use crate::engine::game::Game;
 use crate::interface::{
-    components::{ascii_text::SETUP_HEADER, inputs::InputStyle, layouts::MenuLayout},
+    components::{ascii_text::SETUP_HEADER, inputs::InputStyle},
     interface_callback::InterfaceCallback,
+    layouts::menu::MenuLayout,
     screens::{paragraph_from_multiline_string, Screen},
 };
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
