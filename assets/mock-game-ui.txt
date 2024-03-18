@@ -30,6 +30,4 @@
 
     Prompts/outputs go here...
 
-    -><-↓↑
-
     →←↓↑
