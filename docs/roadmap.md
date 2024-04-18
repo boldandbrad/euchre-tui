@@ -15,6 +15,7 @@ often.
 - Implement game over/victory screens
 - Implement help screen
 - Ability to play a game of euchre with cpus
+- Implement min screen size and handle window resizes gracefully
 - Event logging for debugging
 - Implement colors/emojis and text styling
 

@@ -1,6 +1,9 @@
 use crate::interface::{interface_callback::InterfaceCallback, Interface};
 use crate::tui::Tui;
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
+use crossterm::{
+    event::{Event, KeyCode, KeyEvent, KeyModifiers},
+    // terminal::size,
+};
 use ratatui::prelude::{CrosstermBackend, Terminal};
 use std::{
     io::{stdout, Result},
@@ -34,6 +37,13 @@ impl App {
             Terminal::new(CrosstermBackend::new(stdout()))?;
         let mut tui = Tui::new(terminal);
         tui.init()?;
+
+        // TODO: check and handle terminal size
+        // let (cols, rows) = size()?;
+        // println!("{}x{}", cols, rows);
+        // if cols < 120 || rows < 36 {
+        //     self.is_running = false;
+        // }
 
         // initialize tick tracker
         let mut last_tick = Instant::now();
