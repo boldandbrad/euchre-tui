@@ -5,7 +5,7 @@ use crate::interface::{
 use crate::{
     engine::{
         card::Card,
-        game::{Game, GameState},
+        game::Game,
         player::Player,
         table::{Seat, SEAT_VARIANTS},
     },
@@ -157,47 +157,8 @@ impl Screen for GameScreen {
     }
 
     fn handle_tick_event(&mut self) -> Option<InterfaceCallback> {
-        match self.is_paused {
-            false => {
-                match self.game.state {
-                    GameState::PickingDealer => {
-                        if self.game.hand_num == 0 {
-                            // TODO: implement picking first dealer by first black jack, then recreating the deck
-                            self.game.dealer_seat = rand::random();
-                        } else {
-                            self.game.dealer_seat = self.game.dealer_seat.next();
-                        }
-                        self.game.current_player_seat = self.game.dealer_seat.next();
-                        self.game.state = GameState::DealingHand;
-                    }
-                    GameState::DealingHand => {
-                        // TODO: deal the "appropriate" way (2, 3, 2, 3, 3, 2, 3, 2)
-                        if self.tick_count >= 5 {
-                            if self.game.current_player().hand.is_empty() {
-                                self.game.current_player_mut().hand = self.game.deck.deal(5);
-                                self.game.next_turn();
-                            } else {
-                                // TODO: display face up card and deck on the table
-                                self.game.current_player_seat = self.game.dealer_seat.next();
-                                self.game.state = GameState::CallingPickup;
-                            }
-                            self.tick_count = 0
-                        } else {
-                            self.tick_count += 1
-                        }
-                    }
-                    GameState::CallingPickup => {}
-                    GameState::CallingHighSuit => {}
-                    GameState::PlayingHand => {}
-                }
-                // if self.tick_count >= 20 {
-                //     self.game.next_turn();
-                //     self.tick_count = 0
-                // } else {
-                //     self.tick_count += 1
-                // }
-            }
-            true => {}
+        if !self.is_paused {
+            self.tick_count = self.game.handle_game_tick(self.tick_count);
         }
         None
     }

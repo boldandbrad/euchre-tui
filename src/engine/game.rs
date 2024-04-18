@@ -105,7 +105,7 @@ impl Game {
             .expect("player not found")
     }
 
-    pub fn current_player_mut(&mut self) -> &mut Player {
+    fn current_player_mut(&mut self) -> &mut Player {
         self.players
             .get_mut(&self.current_player_seat)
             .expect("player not found")
@@ -115,8 +115,43 @@ impl Game {
         self.players.get(&seat).expect("player not found")
     }
 
-    pub fn next_turn(&mut self) {
+    fn next_turn(&mut self) {
         self.current_player_seat = self.current_player_seat.next();
+    }
+
+    pub fn handle_game_tick(&mut self, mut tick_count: u64) -> u64 {
+        match self.state {
+            GameState::PickingDealer => {
+                if self.hand_num == 0 {
+                    // TODO: implement picking first dealer by first black jack, then recreating the deck
+                    self.dealer_seat = rand::random();
+                } else {
+                    self.dealer_seat = self.dealer_seat.next();
+                }
+                self.current_player_seat = self.dealer_seat.next();
+                self.state = GameState::DealingHand;
+            }
+            GameState::DealingHand => {
+                // TODO: deal the "appropriate" way (2, 3, 2, 3, 3, 2, 3, 2)
+                if tick_count >= 5 {
+                    if self.current_player().hand.is_empty() {
+                        self.current_player_mut().hand = self.deck.deal(5);
+                        self.next_turn();
+                    } else {
+                        // TODO: display face up card and deck on the table
+                        self.current_player_seat = self.dealer_seat.next();
+                        self.state = GameState::CallingPickup;
+                    }
+                    tick_count = 0
+                } else {
+                    tick_count += 1
+                }
+            }
+            GameState::CallingPickup => {}
+            GameState::CallingHighSuit => {}
+            GameState::PlayingHand => {}
+        }
+        tick_count
     }
 }
 
